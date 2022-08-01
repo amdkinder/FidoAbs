@@ -2,8 +2,10 @@ package uz.devops.fido.abs.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class ClientInfoDTO {
+public class ClientInfoDTO implements Serializable {
     /**
      * Статус клиента
      */

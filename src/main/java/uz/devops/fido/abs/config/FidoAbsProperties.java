@@ -9,9 +9,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @ConfigurationProperties(prefix = "fido-abs")
 public class FidoAbsProperties {
-    private Credentials credentials;
+    private Config config;
     @Data
-    public class Credentials {
+    public class Config {
         private String username;
         private String password;
         private String token;

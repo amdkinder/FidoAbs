@@ -31,12 +31,18 @@ public class DummyFidoAbsServiceImpl implements FidoAbsService {
     }
 
     @Override
-    public ClientInfoDTO getClientInfo(String clientId) {
-        return null;
+    public ClientInfoResDTO getClientInfo(String clientId) {
+        var clientInfo = new ClientInfoDTO();
+        clientInfo.setStatus("A");
+        return new ClientInfoResDTO(List.of(clientInfo));
     }
 
     @Override
-    public List<AccountDTO> getActiveAccounts(String clientId) {
+    public AccountResDTO<List<AccountDTO>> getActiveAccounts(String clientId) {
+        var accountDTO = new AccountDTO();
+        accountDTO.setAccount("account");
+        accountDTO.setCodeCoa("3434");
+        accountDTO.setCondition("");
         return null;
     }
 
