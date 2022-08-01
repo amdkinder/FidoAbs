@@ -26,12 +26,15 @@
 	</properties>
 
 	<dependencies>
-        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok-maven -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.20</version>
+			<version>1.18.24</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
