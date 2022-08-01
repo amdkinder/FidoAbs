@@ -1,0 +1,12 @@
+{
+  "generator-spring-boot-plugin": {
+    "promptValues": {
+      "appname": "FidoAbs",
+      "basePackage": "uz.devops",
+      "deps": [
+        "\n\t\t<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok-maven -->\n\t\t<dependency>\n\t\t\t<groupId>org.projectlombok</groupId>\n\t\t\t<artifactId>lombok</artifactId>\n\t\t\t<version>1.18.20</version>\n\t\t\t<scope>compile</scope>\n\t\t</dependency>\n",
+        "\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-test</artifactId>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n"
+      ]
+    }
+  }
+}
