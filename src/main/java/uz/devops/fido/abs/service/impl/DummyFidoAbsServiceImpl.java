@@ -21,44 +21,45 @@ public class DummyFidoAbsServiceImpl implements FidoAbsService {
 
 
     @Override
-    public ClientInfoResDTO getClientInfo(String clientId) {
+    public ResultDTO<ClientInfoDTO> getClientInfo(String clientId) {
         var clientInfo = DummyData.clientInfo();
-        return new ClientInfoResDTO(List.of(clientInfo));
+        return new ResultDTO<>(clientInfo);
     }
 
     @Override
-    public AccountResDTO<List<AccountDTO>> getActiveAccounts(String clientId) {
+    public ResultDTO<List<AccountDTO>> getActiveAccounts(String clientId) {
         var accountDTO = DummyData.accountDTO();
-        return new AccountResDTO<>(List.of(accountDTO));
+        return new ResultDTO<>(List.of(accountDTO));
     }
 
     @Override
-    public DocumentResultDTO createDocument(DocumentDTO documentDTO) {
-        return new DocumentResultDTO(List.of(DummyData.createdDocument()));
+    public ResultDTO<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
+        return new ResultDTO<>(DummyData.createdDocument());
     }
 
     @Override
-    public DocumentDTO getDocument(String transactionId) {
+    public ResultDTO<TransactionDTO> getTransaction(String transactionId) {
         var documentDTO = DummyData.documentDTO();
-        return documentDTO;
+        return new ResultDTO<>(documentDTO);
     }
 
     @Override
-    public BaseResultDTO deleteTransactionById(String transactionId) {
+    public ResultDTO<?> deleteTransactionById(String transactionId) {
         return ResultDTO.builder()
             .msg("Успешно")
             .code(0)
+            .success(true)
             .build();
     }
 
     @Override
-    public List<ExchangeRateDTO> getExchangeRates(ExchangeRateCriteria criteria) {
-        return List.of(DummyData.exchangeRateDTO());
+    public ResultDTO<List<ExchangeRateDTO>> getExchangeRates(ExchangeRateCriteria criteria) {
+        return new ResultDTO<>(List.of(DummyData.exchangeRateDTO()));
     }
 
     @Override
-    public ConversionResultDTO internationalConversion(ConversionDTO conversionDTO) {
-        return DummyData.conversionResultDTO();
+    public ResultDTO<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO) {
+        return new ResultDTO<>(DummyData.conversionResultDTO());
     }
 
 

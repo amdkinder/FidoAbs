@@ -44,8 +44,8 @@ public class DummyData {
             .build();
     }
 
-    public static DocumentDTO documentDTO() {
-        return DocumentDTO.builder()
+    public static TransactionDTO documentDTO() {
+        return TransactionDTO.builder()
             .type("106")
             .externalId("string_extId")
             .docNum("string_docNum")
@@ -69,8 +69,8 @@ public class DummyData {
             .build();
     }
 
-    public static DocumentResultDTO.CreatedDocument createdDocument() {
-        return new DocumentResultDTO.CreatedDocument("transactionId", "extId");
+    public static TransactionResultDTO.CreatedTransaction createdDocument() {
+        return new TransactionResultDTO.CreatedTransaction("transactionId", "extId");
     }
 
     public static ExchangeRateDTO exchangeRateDTO() {

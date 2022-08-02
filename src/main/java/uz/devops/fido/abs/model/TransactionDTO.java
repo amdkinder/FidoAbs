@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DocumentDTO {
+public class TransactionDTO {
 
     private String docNum;
 

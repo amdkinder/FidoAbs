@@ -14,7 +14,7 @@ public interface FidoAbsService {
      * @param clientId (физ) клиент ид
      * @return Информация клиента
      */
-    ClientInfoResDTO getClientInfo(String clientId);
+    ResultDTO<ClientInfoDTO> getClientInfo(String clientId);
 
     /**
      * Список активных счетов клиента (Физ+Юр)
@@ -22,15 +22,15 @@ public interface FidoAbsService {
      * @param clientId
      * @return
      */
-    AccountResDTO<List<AccountDTO>> getActiveAccounts(String clientId);
+    ResultDTO<List<AccountDTO>> getActiveAccounts(String clientId);
 
     /**
      * Формирование разовых платежей (Физ+Юр)
      *
-     * @param documentDTO
+     * @param transactionDTO
      * @return
      */
-    DocumentResultDTO createDocument(DocumentDTO documentDTO);
+    ResultDTO<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO);
 
     /**
      * Получить состояние проводки (Физ+Юр)
@@ -38,7 +38,7 @@ public interface FidoAbsService {
      * @param transactionId
      * @return
      */
-    DocumentDTO getDocument(String transactionId);
+    ResultDTO<TransactionDTO> getTransaction(String transactionId);
 
     /**
      * Отмена транзакции (Физ+Юр)
@@ -46,7 +46,7 @@ public interface FidoAbsService {
      * @param transactionId
      * @return
      */
-    BaseResultDTO deleteTransactionById(String transactionId);
+    ResultDTO<?> deleteTransactionById(String transactionId);
 
     /**
      * Список курс валют
@@ -54,7 +54,7 @@ public interface FidoAbsService {
      * @param criteria
      * @return
      */
-    List<ExchangeRateDTO> getExchangeRates(ExchangeRateCriteria criteria);
+    ResultDTO<List<ExchangeRateDTO>> getExchangeRates(ExchangeRateCriteria criteria);
 
     /**
      * Конвертация
@@ -62,6 +62,6 @@ public interface FidoAbsService {
      * @param conversionDTO
      * @return
      */
-    ConversionResultDTO internationalConversion(ConversionDTO conversionDTO);
+    ResultDTO<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO);
 
 }
