@@ -46,7 +46,7 @@ public interface FidoAbsService {
      * @param transactionId
      * @return
      */
-    Boolean deleteTransactionById(String transactionId);
+    BaseResultDTO deleteTransactionById(String transactionId);
 
     /**
      * Список курс валют

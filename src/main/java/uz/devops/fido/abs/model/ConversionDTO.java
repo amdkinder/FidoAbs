@@ -1,8 +1,16 @@
 package uz.devops.fido.abs.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConversionDTO {
 
     private String indicator;
@@ -23,7 +31,7 @@ public class ConversionDTO {
 
     private String isMasked;
 
-    private String convertionDateTime;
+    private LocalDate convertionDateTime;
 
     private String rollbackIs;
 

@@ -1,10 +1,17 @@
 package uz.devops.fido.abs.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientInfoDTO implements Serializable {
     /**
      * Статус клиента
@@ -45,7 +52,7 @@ public class ClientInfoDTO implements Serializable {
     /**
      * Дата рождения
      */
-    private String birthDate;
+    private LocalDate birthDate;
     /**
      * Место рождения
      */
@@ -77,7 +84,7 @@ public class ClientInfoDTO implements Serializable {
     /**
      * Дата выдачи
      */
-    private String docIssueDate;
+    private LocalDate docIssueDate;
     /**
      * Дата окончания действия
      */

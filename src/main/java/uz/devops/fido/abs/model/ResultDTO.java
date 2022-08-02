@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Purpose {
-
-    private String code;
-
-    private String name;
+public class ResultDTO<T> implements BaseResultDTO {
+    private T data;
+    private String msg;
+    private int code;
+    private Exception exception;
+    private Boolean success;
 }
