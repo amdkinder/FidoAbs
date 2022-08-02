@@ -24,6 +24,7 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public FidoAbsServiceImpl(@Qualifier(FidoAbsConfiguration.ABS_REST_TEMPLATE) RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
+    //TODO must make header
 
     @Override
     public ResultDTO<ClientInfoDTO> getClientInfo(String clientId) {
