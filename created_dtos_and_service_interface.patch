@@ -1,0 +1,250 @@
+Index: src/main/java/uz/devops/fido/abs/config/FidoAbsConfiguration.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/uz/devops/fido/abs/config/FidoAbsConfiguration.java b/src/main/java/uz/devops/fido/abs/config/FidoAbsConfiguration.java
+--- a/src/main/java/uz/devops/fido/abs/config/FidoAbsConfiguration.java	(revision 106bd420738033595b4e588c2de6d4eb725857db)
++++ b/src/main/java/uz/devops/fido/abs/config/FidoAbsConfiguration.java	(date 1659465293305)
+@@ -2,6 +2,7 @@
+ 
+ 
+ import lombok.RequiredArgsConstructor;
++import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.boot.context.properties.EnableConfigurationProperties;
+ import org.springframework.boot.web.client.RestTemplateBuilder;
+ import org.springframework.context.annotation.Bean;
+@@ -19,7 +20,7 @@
+     public static final String ABS_REST_TEMPLATE = "fidoAbsRestTemplate";
+ 
+     @Bean(ABS_REST_TEMPLATE)
+-    public RestTemplate fidoAbsRestTemplate() {
++    public RestTemplate fidoAbsRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+         var config = fidoAbsProperties.getConfig();
+         return new RestTemplateBuilder()
+             .rootUri(config.getBaseUri())
+@@ -29,5 +30,10 @@
+             .build();
+     }
+ 
++    @Bean
++    public RestTemplateBuilder restTemplateBuilder() {
++        return new RestTemplateBuilder();
++    }
++
+ 
+ }
+Index: src/main/java/uz/devops/fido/abs/service/impl/FidoAbsServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/uz/devops/fido/abs/service/impl/FidoAbsServiceImpl.java b/src/main/java/uz/devops/fido/abs/service/impl/FidoAbsServiceImpl.java
+--- a/src/main/java/uz/devops/fido/abs/service/impl/FidoAbsServiceImpl.java	(revision 106bd420738033595b4e588c2de6d4eb725857db)
++++ b/src/main/java/uz/devops/fido/abs/service/impl/FidoAbsServiceImpl.java	(date 1659465353765)
+@@ -19,10 +19,10 @@
+ @ConditionalOnProperty(prefix = "fido-abs", name = "simulate", havingValue = "false")
+ public class FidoAbsServiceImpl implements FidoAbsService {
+ 
+-    private final RestTemplate restTemplate;
++    private final RestTemplate fidoAbsRestTemplate;
+ 
+-    public FidoAbsServiceImpl(@Qualifier(FidoAbsConfiguration.ABS_REST_TEMPLATE) RestTemplate restTemplate) {
+-        this.restTemplate = restTemplate;
++    public FidoAbsServiceImpl(@Qualifier(FidoAbsConfiguration.ABS_REST_TEMPLATE) RestTemplate fidoAbsRestTemplate) {
++        this.fidoAbsRestTemplate = fidoAbsRestTemplate;
+     }
+     //TODO must make header
+ 
+@@ -31,7 +31,7 @@
+         log.debug("Request to get client info by client id: {}", clientId);
+         var result = new ResultDTO<ClientInfoDTO>();
+         try {
+-            var response = restTemplate.getForEntity(String.format("/1.0.0/get-customer/%s", clientId), ClientInfoResDTO.class);
++            var response = fidoAbsRestTemplate.getForEntity(String.format("/1.0.0/get-customer/%s", clientId), ClientInfoResDTO.class);
+             log.debug("Response from abs for get client info: {}, client id: {}", response, clientId);
+             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().getResponse() != null) {
+                 ClientInfoDTO clientInfoDTO = null;
+@@ -60,7 +60,7 @@
+         log.debug("Request to get client accounts by client id: {}", clientId);
+         var result = new ResultDTO<List<AccountDTO>>();
+         try {
+-            var response = restTemplate.getForEntity(String.format("/1.0.0/get-active-accounts/%s", clientId), AccountResDTO.class);
++            var response = fidoAbsRestTemplate.getForEntity(String.format("/1.0.0/get-active-accounts/%s", clientId), AccountResDTO.class);
+             log.debug("Response from abs for get client accounts: {}, client id: {}", response, clientId);
+             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().getResponseBody() != null) {
+                 result.setData(response.getBody().getResponseBody());
+@@ -86,7 +86,7 @@
+         log.debug("Request to create document: {}", transactionDTO);
+         var result = new ResultDTO<TransactionResultDTO.CreatedTransaction>();
+         try {
+-            var response = restTemplate.postForEntity("/1.0.0/transactions", transactionDTO, TransactionResultDTO.class);
++            var response = fidoAbsRestTemplate.postForEntity("/1.0.0/transactions", transactionDTO, TransactionResultDTO.class);
+             log.debug("Response to create document: {}", response);
+             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().getCreatedDocument() != null) {
+                 TransactionResultDTO.CreatedTransaction createdDoc = null;
+@@ -114,7 +114,7 @@
+         log.debug("Request to get document by transaction id: {}", transactionId);
+         var result = new ResultDTO<TransactionDTO>();
+         try {
+-            var response = restTemplate.getForEntity(String.format("/1.0.0/transactions/%s", transactionId), TransactionDTO.class);
++            var response = fidoAbsRestTemplate.getForEntity(String.format("/1.0.0/transactions/%s", transactionId), TransactionDTO.class);
+             log.debug("Response to get document: {}", response);
+             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                 result.setData(response.getBody());
+@@ -138,7 +138,7 @@
+         log.debug("Request to cancel transaction by id: {}", transactionId);
+         var result = new ResultDTO<>();
+         try {
+-            var response = restTemplate.getForEntity(String.format("/1.0.0/transactions/%s", transactionId), ResultDTO.class);
++            var response = fidoAbsRestTemplate.getForEntity(String.format("/1.0.0/transactions/%s", transactionId), ResultDTO.class);
+             log.debug("Response to cancel transaction by id: {}", response);
+             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                 result = response.getBody();
+@@ -163,7 +163,7 @@
+         var result = new ResultDTO<List<ExchangeRateDTO>>();
+         var uri = UriComponentsBuilder.fromHttpUrl("/1.0.0/international-card/get-list-exchange-rates").queryParam("dateCross", criteria.getDateCross()).queryParam("currencyCode", criteria.getCurrencyCode()).build();
+         try {
+-            var response = restTemplate.postForEntity(uri.toUri(), criteria, ExchangeRateDTO[].class);
++            var response = fidoAbsRestTemplate.postForEntity(uri.toUri(), criteria, ExchangeRateDTO[].class);
+             log.debug("Response to get exchange rates: {}", response);
+             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                 result = new ResultDTO<>(List.of(response.getBody()));
+@@ -187,7 +187,7 @@
+         log.debug("Request to international conversion: {}", conversionDTO);
+         var result = new ResultDTO<ConversionResultDTO>();
+         try {
+-            var response = restTemplate.postForEntity("/1.0.0/international-card/conversion", conversionDTO, ConversionResultDTO.class);
++            var response = fidoAbsRestTemplate.postForEntity("/1.0.0/international-card/conversion", conversionDTO, ConversionResultDTO.class);
+             log.debug("Response to international conversion: {}", response);
+             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                 result.setData(response.getBody());
+Index: src/test/java/uz/devops/fido/abs/config/TestConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/uz/devops/fido/abs/config/TestConfig.java b/src/test/java/uz/devops/fido/abs/config/TestConfig.java
+--- a/src/test/java/uz/devops/fido/abs/config/TestConfig.java	(revision 106bd420738033595b4e588c2de6d4eb725857db)
++++ b/src/test/java/uz/devops/fido/abs/config/TestConfig.java	(date 1659465264979)
+@@ -1,14 +1,26 @@
+ package uz.devops.fido.abs.config;
+ 
++import lombok.RequiredArgsConstructor;
++import org.springframework.boot.web.client.RestTemplateBuilder;
++import org.springframework.context.annotation.Bean;
+ import org.springframework.context.annotation.ComponentScan;
+ import org.springframework.context.annotation.Configuration;
++import org.springframework.context.annotation.Primary;
++import org.springframework.web.client.RestTemplate;
+ import uz.devops.fido.abs.config.FidoAbsConfiguration;
+ import uz.devops.fido.abs.service.FidoAbsService;
++import uz.devops.fido.abs.service.impl.DummyFidoAbsServiceImpl;
++import uz.devops.fido.abs.service.impl.FidoAbsServiceImpl;
++
++import java.time.Duration;
+ 
+ import static org.junit.Assert.*;
+ 
+ @Configuration
+ @ComponentScan("uz.devops.fido.abs")
++@RequiredArgsConstructor
+ public class TestConfig {
+ 
++
++
+ }
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/pom.xml
+--- a/pom.xml	(revision 106bd420738033595b4e588c2de6d4eb725857db)
++++ b/pom.xml	(date 1659465188121)
+@@ -43,6 +43,11 @@
+ 			<artifactId>spring-boot-starter-test</artifactId>
+ 			<scope>test</scope>
+ 		</dependency>
++<!--        <dependency>-->
++<!--            <groupId>org.mockito</groupId>-->
++<!--            <artifactId>mockito-core</artifactId>-->
++<!--            <version>4.6.1</version>-->
++<!--        </dependency>-->
+ 
+     </dependencies>
+ 
+Index: src/main/resources/application.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/application.yaml b/src/main/resources/application.yaml
+--- a/src/main/resources/application.yaml	(revision 106bd420738033595b4e588c2de6d4eb725857db)
++++ b/src/main/resources/application.yaml	(date 1659464570132)
+@@ -1,3 +1,8 @@
+ fido-abs:
+ #  name: fido-abs-sample
+   simulate: true
++
++#spring:
++#    main:
++#        allow-bean-definition-overriding: true
++#
+Index: src/main/java/uz/devops/fido/abs/service/impl/DummyData.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/uz/devops/fido/abs/service/impl/DummyData.java b/src/main/java/uz/devops/fido/abs/service/impl/DummyData.java
+--- a/src/main/java/uz/devops/fido/abs/service/impl/DummyData.java	(revision 106bd420738033595b4e588c2de6d4eb725857db)
++++ b/src/main/java/uz/devops/fido/abs/service/impl/DummyData.java	(date 1659464253770)
+@@ -107,5 +107,7 @@
+         return new ConversionResultDTO("244363");
+     }
+ 
+-
++    public static String clientId() {
++        return "1236543";
++    }
+ }
+Index: src/test/java/uz/devops/fido/abs/service/FidoAbsServiceTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/uz/devops/fido/abs/service/FidoAbsServiceTest.java b/src/test/java/uz/devops/fido/abs/service/FidoAbsServiceTest.java
+--- a/src/test/java/uz/devops/fido/abs/service/FidoAbsServiceTest.java	(revision 106bd420738033595b4e588c2de6d4eb725857db)
++++ b/src/test/java/uz/devops/fido/abs/service/FidoAbsServiceTest.java	(date 1659464342903)
+@@ -1,16 +1,31 @@
+ package uz.devops.fido.abs.service;
+ 
+ import org.junit.jupiter.api.Test;
++import org.junit.runner.RunWith;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.boot.test.context.SpringBootTest;
++import org.springframework.test.context.junit4.SpringRunner;
++import uz.devops.fido.abs.config.TestConfig;
+ import uz.devops.fido.abs.model.ClientInfoDTO;
++import uz.devops.fido.abs.service.impl.DummyData;
+ 
+ import java.time.LocalDate;
+ 
++import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
++
++@RunWith(SpringRunner.class)
++@SpringBootTest(classes = {TestConfig.class})
+ class FidoAbsServiceTest {
+ 
++    @Autowired
++    private FidoAbsService fidoAbsService;
+ 
+ 
+     @Test
+     void getClientInfo() {
++        var result = fidoAbsService.getClientInfo(DummyData.clientId());
++        assertThat(result.getSuccess()).isTrue();
++        assertThat(result.getData()).isEqualTo(DummyData.clientInfo());
+     }
+ 
+     @Test
