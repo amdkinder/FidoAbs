@@ -1,9 +1,13 @@
 package uz.devops.fido.abs.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.devops.fido.abs.util.LocalDateJsonDeserializer;
+import uz.devops.fido.abs.util.LocalDateJsonSerializer;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -52,6 +56,8 @@ public class ClientInfoDTO implements Serializable {
     /**
      * Дата рождения
      */
+    @JsonSerialize(using = LocalDateJsonSerializer.class)
+    @JsonDeserialize(using = LocalDateJsonDeserializer.class)
     private LocalDate birthDate;
     /**
      * Место рождения
@@ -84,6 +90,8 @@ public class ClientInfoDTO implements Serializable {
     /**
      * Дата выдачи
      */
+    @JsonSerialize(using = LocalDateJsonSerializer.class)
+    @JsonDeserialize(using = LocalDateJsonDeserializer.class)
     private LocalDate docIssueDate;
     /**
      * Дата окончания действия

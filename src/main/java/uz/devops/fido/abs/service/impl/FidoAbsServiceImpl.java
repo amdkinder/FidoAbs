@@ -2,15 +2,23 @@ package uz.devops.fido.abs.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uz.devops.fido.abs.config.FidoAbsConfiguration;
+import uz.devops.fido.abs.config.FidoAbsProperties;
 import uz.devops.fido.abs.model.*;
 import uz.devops.fido.abs.service.FidoAbsService;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import static uz.devops.fido.abs.service.FidoAbsService.NAME;
 
@@ -20,18 +28,37 @@ import static uz.devops.fido.abs.service.FidoAbsService.NAME;
 public class FidoAbsServiceImpl implements FidoAbsService {
 
     private final RestTemplate restTemplate;
+    private final FidoAbsProperties fidoAbsProperties;
 
-    public FidoAbsServiceImpl(@Qualifier(FidoAbsConfiguration.ABS_REST_TEMPLATE) RestTemplate restTemplate) {
+    private HttpHeaders httpHeaders;
+
+    @Value("${fido-abs.config.base-uri}")
+    private String baseUri;
+
+    public FidoAbsServiceImpl(@Qualifier(FidoAbsConfiguration.ABS_REST_TEMPLATE) RestTemplate restTemplate, FidoAbsProperties fidoAbsProperties) {
         this.restTemplate = restTemplate;
+        this.fidoAbsProperties = fidoAbsProperties;
     }
+
     //TODO must make header
+    public HttpHeaders getHttpHeaders() {
+        if (httpHeaders == null) {
+            httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+            httpHeaders.setBearerAuth(fidoAbsProperties.getConfig().getToken());
+            httpHeaders.add("Accept-Language", "ru");
+        }
+        httpHeaders.add("requestId", "bm_request_" + System.currentTimeMillis() + UUID.randomUUID());
+        return httpHeaders;
+    }
 
     @Override
     public ResultDTO<ClientInfoDTO> getClientInfo(String clientId) {
         log.debug("Request to get client info by client id: {}", clientId);
         var result = new ResultDTO<ClientInfoDTO>();
+        var request = new HttpEntity<>(getHttpHeaders());
         try {
-            var response = restTemplate.getForEntity(String.format("/1.0.0/get-customer/%s", clientId), ClientInfoResDTO.class);
+            var response = restTemplate.exchange(String.format("/1.0.0/get-customer/%s", clientId), HttpMethod.GET, request, ClientInfoResDTO.class);
             log.debug("Response from abs for get client info: {}, client id: {}", response, clientId);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().getResponse() != null) {
                 ClientInfoDTO clientInfoDTO = null;
@@ -59,8 +86,9 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public ResultDTO<List<AccountDTO>> getActiveAccounts(String clientId) {
         log.debug("Request to get client accounts by client id: {}", clientId);
         var result = new ResultDTO<List<AccountDTO>>();
+        var request = new HttpEntity<>(getHttpHeaders());
         try {
-            var response = restTemplate.getForEntity(String.format("/1.0.0/get-active-accounts/%s", clientId), AccountResDTO.class);
+            var response = restTemplate.exchange(String.format("/1.0.0/get-active-accounts/%s", clientId), HttpMethod.GET, request, AccountResDTO.class);
             log.debug("Response from abs for get client accounts: {}, client id: {}", response, clientId);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().getResponseBody() != null) {
                 result.setData(response.getBody().getResponseBody());
@@ -85,8 +113,9 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public ResultDTO<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
         log.debug("Request to create document: {}", transactionDTO);
         var result = new ResultDTO<TransactionResultDTO.CreatedTransaction>();
+        var request = new HttpEntity<>(transactionDTO, getHttpHeaders());
         try {
-            var response = restTemplate.postForEntity("/1.0.0/transactions", transactionDTO, TransactionResultDTO.class);
+            var response = restTemplate.exchange("/1.0.0/transactions", HttpMethod.POST, request, TransactionResultDTO.class);
             log.debug("Response to create document: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().getCreatedDocument() != null) {
                 TransactionResultDTO.CreatedTransaction createdDoc = null;
@@ -113,8 +142,10 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public ResultDTO<TransactionDTO> getTransaction(String transactionId) {
         log.debug("Request to get document by transaction id: {}", transactionId);
         var result = new ResultDTO<TransactionDTO>();
+        var request = new HttpEntity<>(getHttpHeaders());
+
         try {
-            var response = restTemplate.getForEntity(String.format("/1.0.0/transactions/%s", transactionId), TransactionDTO.class);
+            var response = restTemplate.exchange(String.format("/1.0.0/transactions/%s", transactionId), HttpMethod.GET, request, TransactionDTO.class);
             log.debug("Response to get document: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result.setData(response.getBody());
@@ -137,8 +168,9 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public ResultDTO<?> deleteTransactionById(String transactionId) {
         log.debug("Request to cancel transaction by id: {}", transactionId);
         var result = new ResultDTO<>();
+        var request = new HttpEntity<>(getHttpHeaders());
         try {
-            var response = restTemplate.getForEntity(String.format("/1.0.0/transactions/%s", transactionId), ResultDTO.class);
+            var response = restTemplate.exchange(String.format("/1.0.0/transactions/%s", transactionId), HttpMethod.DELETE, request, ResultDTO.class);
             log.debug("Response to cancel transaction by id: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result = response.getBody();
@@ -161,9 +193,14 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public ResultDTO<List<ExchangeRateDTO>> getExchangeRates(ExchangeRateCriteria criteria) {
         log.debug("Request to get exchange rates by criteria: {}", criteria);
         var result = new ResultDTO<List<ExchangeRateDTO>>();
-        var uri = UriComponentsBuilder.fromHttpUrl("/1.0.0/international-card/get-list-exchange-rates").queryParam("dateCross", criteria.getDateCross()).queryParam("currencyCode", criteria.getCurrencyCode()).build();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        var request = new HttpEntity<>(getHttpHeaders());
+        var uri = UriComponentsBuilder.fromUriString(fidoAbsProperties.getConfig().getBaseUri() + "/1.0.0/international-card/get-list-exchange-rates")
+            .queryParam("dateCross", criteria.getDateCross().format(formatter))
+            .queryParam("currencyCode", criteria.getCurrencyCode())
+            .build();
         try {
-            var response = restTemplate.postForEntity(uri.toUri(), criteria, ExchangeRateDTO[].class);
+            var response = restTemplate.exchange(uri.toUri(),HttpMethod.GET, request, ExchangeRateDTO[].class);
             log.debug("Response to get exchange rates: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result = new ResultDTO<>(List.of(response.getBody()));
@@ -186,8 +223,9 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public ResultDTO<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO) {
         log.debug("Request to international conversion: {}", conversionDTO);
         var result = new ResultDTO<ConversionResultDTO>();
+        var request = new HttpEntity<>(conversionDTO,getHttpHeaders());
         try {
-            var response = restTemplate.postForEntity("/1.0.0/international-card/conversion", conversionDTO, ConversionResultDTO.class);
+            var response = restTemplate.exchange("/1.0.0/international-card/conversion", HttpMethod.POST, request, ConversionResultDTO.class);
             log.debug("Response to international conversion: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result.setData(response.getBody());

@@ -39,7 +39,7 @@ public class DummyFidoAbsServiceImpl implements FidoAbsService {
 
     @Override
     public ResultDTO<TransactionDTO> getTransaction(String transactionId) {
-        var documentDTO = DummyData.documentDTO();
+        var documentDTO = DummyData.transactionDTO();
         return new ResultDTO<>(documentDTO);
     }
 

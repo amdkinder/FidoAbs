@@ -1,31 +1,27 @@
 package uz.devops.fido.abs.service.impl;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import uz.devops.fido.abs.config.TestConfig;
 import uz.devops.fido.abs.service.FidoAbsService;
 
-import static org.junit.Assert.*;
-
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {TestConfig.class})
 public class FidoAbsServiceImplTest {
 
     @Autowired
     private FidoAbsService fidoAbsService;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    static void setUp() {
         //Do something on starting
     }
 
-    @After
-    public void tearDown() {
+    @AfterAll
+    static void tearDown() {
         //Do something on finishing
     }
 

@@ -10,8 +10,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "fido-abs")
 public class FidoAbsProperties {
     private Config config;
+    private Boolean simulate;
+
     @Data
-    public class Config {
+
+    public static class Config {
         private String username;
         private String password;
         private String token;

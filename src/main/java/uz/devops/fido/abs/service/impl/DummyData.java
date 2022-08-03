@@ -3,6 +3,8 @@ package uz.devops.fido.abs.service.impl;
 import uz.devops.fido.abs.model.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 public class DummyData {
     public static ClientInfoDTO clientInfo() {
@@ -44,7 +46,7 @@ public class DummyData {
             .build();
     }
 
-    public static TransactionDTO documentDTO() {
+    public static TransactionDTO transactionDTO() {
         return TransactionDTO.builder()
             .type("106")
             .externalId("string_extId")
@@ -103,9 +105,20 @@ public class DummyData {
             .build();
     }
 
+    public static  ExchangeRateCriteria criteria() {
+        return new ExchangeRateCriteria(LocalDate.EPOCH, "ALL");
+    }
+
     public static ConversionResultDTO conversionResultDTO() {
         return new ConversionResultDTO("244363");
     }
 
+    public static String clientId() {
+        return "12345";
+    }
+
+    public static String transactionId() {
+        return "54123456";
+    }
 
 }

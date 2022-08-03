@@ -1,15 +1,14 @@
 package uz.devops.fido.abs.config;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.Duration;
-//import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @Configuration
 @EnableConfigurationProperties(FidoAbsProperties.class)
@@ -20,14 +19,16 @@ public class FidoAbsConfiguration {
 
     @Bean(ABS_REST_TEMPLATE)
     public RestTemplate fidoAbsRestTemplate() {
-        var config = fidoAbsProperties.getConfig();
-        return new RestTemplateBuilder()
-            .rootUri(config.getBaseUri())
-            .setReadTimeout(Duration.ofSeconds(config.getReadTimeout()))
-            .setConnectTimeout(Duration.ofSeconds(config.getConnectTimeout()))
-            .defaultHeader("Authorization", "Bearer " + config.getPassword())
-            .build();
+        var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setConnectTimeout(fidoAbsProperties.getConfig().getConnectTimeout());
+        httpRequestFactory.setReadTimeout(fidoAbsProperties.getConfig().getReadTimeout());
+        var restTemplate = new RestTemplate(httpRequestFactory);
+        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(fidoAbsProperties.getConfig().getBaseUri()));
+
+        return restTemplate;
     }
+
+
 
 
 }
