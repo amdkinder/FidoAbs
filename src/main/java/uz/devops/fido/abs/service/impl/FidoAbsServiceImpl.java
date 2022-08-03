@@ -230,6 +230,10 @@ public class FidoAbsServiceImpl implements FidoAbsService {
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result.setData(response.getBody());
                 result.setSuccess(true);
+            } else if (response.getStatusCode().is4xxClientError()) {
+                log.debug("Unauthorized client");
+                result.setSuccess(false);
+                result.setMsg("Unauthorized client");
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
                 result.setSuccess(false);
