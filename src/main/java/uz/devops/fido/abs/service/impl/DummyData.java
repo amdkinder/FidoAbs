@@ -3,8 +3,6 @@ package uz.devops.fido.abs.service.impl;
 import uz.devops.fido.abs.model.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 
 public class DummyData {
     public static ClientInfoDTO clientInfo() {
@@ -114,7 +112,7 @@ public class DummyData {
     }
 
     public static String clientId() {
-        return "12345";
+        return "6557883";
     }
 
     public static String transactionId() {

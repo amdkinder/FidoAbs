@@ -29,15 +29,17 @@ public class FidoAbsServiceImpl implements FidoAbsService {
 
     private final RestTemplate restTemplate;
     private final FidoAbsProperties fidoAbsProperties;
+    private final AuthorizationService authorizationService;
 
     private HttpHeaders httpHeaders;
 
     @Value("${fido-abs.config.base-uri}")
     private String baseUri;
 
-    public FidoAbsServiceImpl(@Qualifier(FidoAbsConfiguration.ABS_REST_TEMPLATE) RestTemplate restTemplate, FidoAbsProperties fidoAbsProperties) {
+    public FidoAbsServiceImpl(@Qualifier(FidoAbsConfiguration.ABS_REST_TEMPLATE) RestTemplate restTemplate, FidoAbsProperties fidoAbsProperties, AuthorizationService authorizationService) {
         this.restTemplate = restTemplate;
         this.fidoAbsProperties = fidoAbsProperties;
+        this.authorizationService = authorizationService;
     }
 
     //TODO must make header
@@ -45,10 +47,10 @@ public class FidoAbsServiceImpl implements FidoAbsService {
         if (httpHeaders == null) {
             httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            httpHeaders.setBearerAuth(fidoAbsProperties.getConfig().getToken());
-            httpHeaders.add("Accept-Language", "ru");
+            httpHeaders.setBearerAuth(authorizationService.getToken());
+            httpHeaders.set("Accept-Language", "ru");
         }
-        httpHeaders.add("requestId", "bm_request_" + System.currentTimeMillis() + UUID.randomUUID());
+        httpHeaders.set("requestId", String.valueOf(System.currentTimeMillis()));
         return httpHeaders;
     }
 
@@ -200,7 +202,7 @@ public class FidoAbsServiceImpl implements FidoAbsService {
             .queryParam("currencyCode", criteria.getCurrencyCode())
             .build();
         try {
-            var response = restTemplate.exchange(uri.toUri(),HttpMethod.GET, request, ExchangeRateDTO[].class);
+            var response = restTemplate.exchange(uri.toUri(), HttpMethod.GET, request, ExchangeRateDTO[].class);
             log.debug("Response to get exchange rates: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result = new ResultDTO<>(List.of(response.getBody()));
@@ -223,7 +225,7 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public ResultDTO<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO) {
         log.debug("Request to international conversion: {}", conversionDTO);
         var result = new ResultDTO<ConversionResultDTO>();
-        var request = new HttpEntity<>(conversionDTO,getHttpHeaders());
+        var request = new HttpEntity<>(conversionDTO, getHttpHeaders());
         try {
             var response = restTemplate.exchange("/1.0.0/international-card/conversion", HttpMethod.POST, request, ConversionResultDTO.class);
             log.debug("Response to international conversion: {}", response);

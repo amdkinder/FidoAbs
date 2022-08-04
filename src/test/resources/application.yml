@@ -1,0 +1,13 @@
+fido-abs:
+    #  name: fido-abs-sample
+    simulate: false
+    config:
+        read-timeout: 5000
+        connect-timeout: 5000
+        base-uri: http://192.168.1.187:9093
+        token: dxN1cm5hbWU6GFzc3dvcmQ=
+        username: adm10491
+        password: rfv123rfv
+logging:
+    level:
+        root: debug
