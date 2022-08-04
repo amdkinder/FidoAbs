@@ -53,13 +53,13 @@ public class DummyData {
             .sender(Transmitter.builder()
                 .account("sender_acc")
                 .codeFilial("sender_code")
-                .tax("sender_tax")
+                .tax("sender")
                 .name("sender_name")
                 .build())
             .recipient(Transmitter.builder()
                 .account("recipient_acc")
                 .codeFilial("recipient_code")
-                .tax("recipient_tax")
+                .tax("recipient")
                 .name("recipient_name")
                 .build())
             .purpose(Purpose.builder()
@@ -112,7 +112,7 @@ public class DummyData {
     }
 
     public static String clientId() {
-        return "6557883";
+        return "06557883";
     }
 
     public static String transactionId() {

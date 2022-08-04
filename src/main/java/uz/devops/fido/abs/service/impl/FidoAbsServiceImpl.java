@@ -115,7 +115,7 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     public ResultDTO<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
         log.debug("Request to create document: {}", transactionDTO);
         var result = new ResultDTO<TransactionResultDTO.CreatedTransaction>();
-        var request = new HttpEntity<>(transactionDTO, getHttpHeaders());
+        var request = new HttpEntity<>(new TransactionReqDTO(transactionDTO), getHttpHeaders());
         try {
             var response = restTemplate.exchange("/1.0.0/transactions", HttpMethod.POST, request, TransactionResultDTO.class);
             log.debug("Response to create document: {}", response);
