@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResultDTO<T> implements BaseResultDTO {
     private T data;
+    private T responseBody;
     private String msg;
-    private int code;
+    private int code = -1;
     private Boolean success;
 
     public ResultDTO(T data) {
@@ -20,10 +21,13 @@ public class ResultDTO<T> implements BaseResultDTO {
         this.success = true;
     }
 
-
     public ResultDTO(Boolean success, String msg) {
         this.msg = msg;
         this.success = success;
+    }
+
+    public boolean isSuccess() {
+        return this.code == 0;
     }
 
 }

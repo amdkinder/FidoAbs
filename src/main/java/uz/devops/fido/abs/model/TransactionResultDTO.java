@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionResultDTO {
-    private List<CreatedTransaction> createdDocument;
+    private List<CreatedTransaction> createdDocuments;
 
     @Data
     @NoArgsConstructor

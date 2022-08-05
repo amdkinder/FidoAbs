@@ -149,7 +149,7 @@ class FidoAbsServiceTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(mapper.writeValueAsString(new ResultDTO<>(false, "Transaction Data not found")))
             );
-        var result = fidoAbsService.deleteTransactionById(DummyData.transactionId());
+        var result = fidoAbsService.cancelTransaction(DummyData.transactionId());
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getData()).isNull();
     }

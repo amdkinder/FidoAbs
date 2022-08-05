@@ -36,7 +36,7 @@ public interface FidoAbsService {
      * @param transactionDTO
      * @return
      */
-    HasData<TransactionResultDTO.CreatedTransaction> createTransaction(@Valid @NotNull TransactionDTO transactionDTO);
+    HasData<TransactionResultDTO.CreatedTransaction> createTransaction(@Valid @NotNull AbsTranDTO transactionDTO);
 
     /**
      * Получить состояние проводки (Физ+Юр)
@@ -44,7 +44,7 @@ public interface FidoAbsService {
      * @param transactionId
      * @return
      */
-    HasData<TransactionDTO> getTransaction(@NotBlank @NotNull String transactionId);
+    HasData<AbsTranDTO> getTransaction(@NotBlank @NotNull String transactionId);
 
     /**
      * Отмена транзакции (Физ+Юр)
@@ -52,7 +52,7 @@ public interface FidoAbsService {
      * @param transactionId
      * @return
      */
-    HasData<?> deleteTransactionById(@Valid @NotNull String transactionId);
+    HasData<?> cancelTransaction(@Valid @NotNull String transactionId);
 
     /**
      * Список курс валют

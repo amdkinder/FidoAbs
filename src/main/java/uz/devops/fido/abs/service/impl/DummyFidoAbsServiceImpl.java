@@ -35,18 +35,18 @@ public class DummyFidoAbsServiceImpl implements FidoAbsService {
     }
 
     @Override
-    public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
+    public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(AbsTranDTO transactionDTO) {
         return new CommonResultData<>(DummyData.createdDocument());
     }
 
     @Override
-    public HasData<TransactionDTO> getTransaction(String transactionId) {
+    public HasData<AbsTranDTO> getTransaction(String transactionId) {
         var documentDTO = DummyData.transactionDTO();
         return new CommonResultData<>(documentDTO);
     }
 
     @Override
-    public HasData<ResultDTO<?>> deleteTransactionById(String transactionId) {
+    public HasData<ResultDTO<?>> cancelTransaction(String transactionId) {
         return new CommonResultData<>(ResultDTO.builder().msg("Успешно").code(0).success(true).build());
     }
 

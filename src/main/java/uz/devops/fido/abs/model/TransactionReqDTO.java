@@ -11,9 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionReqDTO {
-    private List<TransactionDTO> documents;
+    private List<AbsTranDTO> documents;
 
-    public TransactionReqDTO(TransactionDTO ...transactionDTOs) {
+    public TransactionReqDTO(AbsTranDTO...transactionDTOs) {
         this.documents = Arrays.asList(transactionDTOs);
     }
 }

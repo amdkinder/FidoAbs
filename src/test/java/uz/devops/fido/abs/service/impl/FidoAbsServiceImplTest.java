@@ -70,7 +70,7 @@ public class FidoAbsServiceImplTest {
 
     @Test
     void deleteTransactionById() {
-        var result = fidoAbsService.deleteTransactionById(DummyData.transactionId());
+        var result = fidoAbsService.cancelTransaction(DummyData.transactionId());
         log.info("Response from fido abs: {}", result);
         assertThat(result).isNotNull();
     }

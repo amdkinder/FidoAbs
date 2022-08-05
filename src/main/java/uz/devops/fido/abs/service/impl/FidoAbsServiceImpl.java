@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -113,17 +114,20 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     }
 
     @Override
-    public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
+    public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(AbsTranDTO transactionDTO) {
         log.debug("Request to create document: {}", transactionDTO);
         var result = new CommonResultData<TransactionResultDTO.CreatedTransaction>();
         var request = new HttpEntity<>(new TransactionReqDTO(transactionDTO), getHttpHeaders());
         try {
-            var response = restTemplate.exchange("/1.0.0/transactions", HttpMethod.POST, request, TransactionResultDTO.class);
+            var response = restTemplate.exchange("/1.0.0/transactions", HttpMethod.POST, request, new ParameterizedTypeReference<ResultDTO<TransactionResultDTO>>() {});
             log.debug("Response to create document: {}", response);
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().getCreatedDocument() != null) {
+            if (response.getStatusCode().is2xxSuccessful()
+                && response.getBody() != null
+                && response.getBody().getResponseBody() != null
+                && response.getBody().getResponseBody().getCreatedDocuments() != null) {
                 TransactionResultDTO.CreatedTransaction createdDoc = null;
-                if (response.getBody().getCreatedDocument().size() > 0) {
-                    createdDoc = response.getBody().getCreatedDocument().get(0);
+                if (response.getBody().getResponseBody().getCreatedDocuments().size() > 0) {
+                    createdDoc = response.getBody().getResponseBody().getCreatedDocuments().get(0);
                 }
                 result.setData(createdDoc);
                 result.setStatus(HasResult.SUCCESS);
@@ -142,16 +146,16 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     }
 
     @Override
-    public HasData<TransactionDTO> getTransaction(String transactionId) {
+    public HasData<AbsTranDTO> getTransaction(String transactionId) {
         log.debug("Request to get document by transaction id: {}", transactionId);
-        var result = new CommonResultData<TransactionDTO>();
+        var result = new CommonResultData<AbsTranDTO>();
         var request = new HttpEntity<>(getHttpHeaders());
 
         try {
-            var response = restTemplate.exchange(String.format("/1.0.0/transactions/%s", transactionId), HttpMethod.GET, request, TransactionDTO.class);
+            var response = restTemplate.exchange(String.format("/1.0.0/transactions/%s", transactionId), HttpMethod.GET, request, new ParameterizedTypeReference<ResultDTO<AbsTranDTO>>() {});
             log.debug("Response to get document: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                result.setData(response.getBody());
+                result.setData(response.getBody().getResponseBody());
                 result.setStatus(HasResult.SUCCESS);
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
@@ -168,7 +172,7 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     }
 
     @Override
-    public HasData<ResultDTO<?>> deleteTransactionById(String transactionId) {
+    public HasData<ResultDTO<?>> cancelTransaction(String transactionId) {
         log.debug("Request to cancel transaction by id: {}", transactionId);
         var result = new CommonResultData<ResultDTO<?>>();
         var request = new HttpEntity<>(getHttpHeaders());

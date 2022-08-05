@@ -2,6 +2,7 @@ package uz.devops.fido.abs.service.impl;
 
 import uz.devops.fido.abs.model.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class DummyData {
@@ -44,28 +45,27 @@ public class DummyData {
             .build();
     }
 
-    public static TransactionDTO transactionDTO() {
-        return TransactionDTO.builder()
+    public static AbsTranDTO transactionDTO() {
+        return AbsTranDTO.builder()
             .type("106")
             .externalId("string_extId")
-            .docNum("string_docNum")
-            .docDate(LocalDate.EPOCH)
             .sender(Transmitter.builder()
-                .account("sender_acc")
-                .codeFilial("sender_code")
-                .tax("sender")
-                .name("sender_name")
+                .account("17403000300000491643")
+                .codeFilial("00491")
+                .tax("")
+                .name("Tranzit 22616")
                 .build())
             .recipient(Transmitter.builder()
-                .account("recipient_acc")
-                .codeFilial("recipient_code")
-                .tax("recipient")
-                .name("recipient_name")
+                .account("22616000660702149001")
+                .codeFilial("00491")
+                .tax("")
+                .name("Kasimov F")
                 .build())
             .purpose(Purpose.builder()
-                .code("code")
-                .name("name")
+                .code("00634")
+                .name("пополнение тест")
                 .build())
+            .amount(new BigDecimal(1000))
             .build();
     }
 
@@ -116,7 +116,7 @@ public class DummyData {
     }
 
     public static String transactionId() {
-        return "54123456";
+        return "955726066";
     }
 
 }
