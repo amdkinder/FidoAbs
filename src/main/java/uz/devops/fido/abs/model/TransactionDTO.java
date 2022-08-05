@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import uz.devops.fido.abs.util.LocalDateJsonDeserializer;
 import uz.devops.fido.abs.util.LocalDateJsonSerializer;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,12 +24,19 @@ public class TransactionDTO {
     @Size(max = 5)
     private String docNum;
 
+    @NotNull
     private BigDecimal amount;
 
+    @NotNull
+    @Valid
     private Transmitter sender;
 
+    @NotNull
+    @Valid
     private Purpose purpose;
 
+    @NotNull
+    @Valid
     private Transmitter recipient;
 
     private String externalId;
@@ -36,5 +45,6 @@ public class TransactionDTO {
     @JsonDeserialize(using = LocalDateJsonDeserializer.class)
     private LocalDate docDate;
 
+    @NotNull
     private String type;
 }

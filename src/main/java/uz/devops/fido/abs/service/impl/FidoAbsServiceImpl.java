@@ -15,10 +15,12 @@ import uz.devops.fido.abs.config.FidoAbsConfiguration;
 import uz.devops.fido.abs.config.FidoAbsProperties;
 import uz.devops.fido.abs.model.*;
 import uz.devops.fido.abs.service.FidoAbsService;
+import uz.javlon.commons.result.CommonResultData;
+import uz.javlon.commons.result.HasData;
+import uz.javlon.commons.result.HasResult;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 
 import static uz.devops.fido.abs.service.FidoAbsService.NAME;
 
@@ -55,9 +57,9 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     }
 
     @Override
-    public ResultDTO<ClientInfoDTO> getClientInfo(String clientId) {
+    public HasData<ClientInfoDTO> getClientInfo(String clientId) {
         log.debug("Request to get client info by client id: {}", clientId);
-        var result = new ResultDTO<ClientInfoDTO>();
+        var result = new CommonResultData<ClientInfoDTO>();
         var request = new HttpEntity<>(getHttpHeaders());
         try {
             var response = restTemplate.exchange(String.format("/1.0.0/get-customer/%s", clientId), HttpMethod.GET, request, ClientInfoResDTO.class);
@@ -68,53 +70,52 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                     clientInfoDTO = response.getBody().getResponse().get(0);
                 }
                 result.setData(clientInfoDTO);
-                result.setSuccess(true);
+                result.setStatus(HasResult.SUCCESS);
 
             } else {
                 log.debug("");
-                result.setSuccess(false);
-                result.setMsg("RESPONSE IS NOT SUCCESS");
+                result.setStatus(HasResult.UNKNOWN_ERROR);
+                result.setDetails("RESPONSE IS NOT SUCCESS");
             }
         } catch (Exception e) {
-            result.setException(e);
-            result.setMsg(e.getMessage());
-            result.setSuccess(false);
+            log.warn("Can not exchange data from abs: {}", e.getMessage());
+            result.setDetails(e.getMessage());
+            result.setStatus(HasResult.UNKNOWN_ERROR);
         }
         log.debug("RESULT to get client info by client id: {}, result: {}", clientId, result);
         return result;
     }
 
     @Override
-    public ResultDTO<List<AccountDTO>> getActiveAccounts(String clientId) {
+    public HasData<List<AccountDTO>> getActiveAccounts(String clientId) {
         log.debug("Request to get client accounts by client id: {}", clientId);
-        var result = new ResultDTO<List<AccountDTO>>();
+        var result = new CommonResultData<List<AccountDTO>>();
         var request = new HttpEntity<>(getHttpHeaders());
         try {
             var response = restTemplate.exchange(String.format("/1.0.0/get-active-accounts/%s", clientId), HttpMethod.GET, request, AccountResDTO.class);
             log.debug("Response from abs for get client accounts: {}, client id: {}", response, clientId);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().getResponseBody() != null) {
                 result.setData(response.getBody().getResponseBody());
-                result.setSuccess(true);
-                result.setCode(response.getBody().getCode());
-                result.setMsg(response.getBody().getMsg());
+                result.setStatus(HasResult.SUCCESS);
+                result.setDetails(response.getBody().getMsg());
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
-                result.setSuccess(false);
-                result.setMsg("RESPONSE IS NOT SUCCESS");
+                result.setStatus(HasResult.UNKNOWN_ERROR);
+                result.setDetails("RESPONSE IS NOT SUCCESS");
             }
         } catch (Exception e) {
-            result.setException(e);
-            result.setMsg(e.getMessage());
-            result.setSuccess(false);
+            log.warn("Can not exchange data from abs: {}", e.getMessage());
+            result.setDetails(e.getMessage());
+            result.setStatus(HasResult.UNKNOWN_ERROR);
         }
         log.debug("RESULT to get client info by client id: {}, result: {}", clientId, result);
         return result;
     }
 
     @Override
-    public ResultDTO<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
+    public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
         log.debug("Request to create document: {}", transactionDTO);
-        var result = new ResultDTO<TransactionResultDTO.CreatedTransaction>();
+        var result = new CommonResultData<TransactionResultDTO.CreatedTransaction>();
         var request = new HttpEntity<>(new TransactionReqDTO(transactionDTO), getHttpHeaders());
         try {
             var response = restTemplate.exchange("/1.0.0/transactions", HttpMethod.POST, request, TransactionResultDTO.class);
@@ -125,25 +126,25 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                     createdDoc = response.getBody().getCreatedDocument().get(0);
                 }
                 result.setData(createdDoc);
-                result.setSuccess(true);
+                result.setStatus(HasResult.SUCCESS);
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
-                result.setSuccess(false);
-                result.setMsg("RESPONSE IS NOT SUCCESS");
+                result.setStatus(HasResult.UNKNOWN_ERROR);
+                result.setDetails("RESPONSE IS NOT SUCCESS");
             }
         } catch (Exception e) {
-            result.setException(e);
-            result.setMsg(e.getMessage());
-            result.setSuccess(false);
+            log.warn("Can not exchange data from abs: {}", e.getMessage());
+            result.setDetails(e.getMessage());
+            result.setStatus(HasResult.UNKNOWN_ERROR);
         }
         log.debug("Result to create document: {}", result);
         return result;
     }
 
     @Override
-    public ResultDTO<TransactionDTO> getTransaction(String transactionId) {
+    public HasData<TransactionDTO> getTransaction(String transactionId) {
         log.debug("Request to get document by transaction id: {}", transactionId);
-        var result = new ResultDTO<TransactionDTO>();
+        var result = new CommonResultData<TransactionDTO>();
         var request = new HttpEntity<>(getHttpHeaders());
 
         try {
@@ -151,100 +152,98 @@ public class FidoAbsServiceImpl implements FidoAbsService {
             log.debug("Response to get document: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result.setData(response.getBody());
-                result.setSuccess(true);
+                result.setStatus(HasResult.SUCCESS);
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
-                result.setSuccess(false);
-                result.setMsg("RESPONSE IS NOT SUCCESS");
+                result.setStatus(HasResult.UNKNOWN_ERROR);
+                result.setDetails("RESPONSE IS NOT SUCCESS");
             }
         } catch (Exception e) {
-            result.setException(e);
-            result.setMsg(e.getMessage());
-            result.setSuccess(false);
+            log.warn("Can not exchange data from abs: {}", e.getMessage());
+            result.setDetails(e.getMessage());
+            result.setStatus(HasResult.UNKNOWN_ERROR);
         }
         log.debug("Result to get document: {}", result);
         return result;
     }
 
     @Override
-    public ResultDTO<?> deleteTransactionById(String transactionId) {
+    public HasData<ResultDTO<?>> deleteTransactionById(String transactionId) {
         log.debug("Request to cancel transaction by id: {}", transactionId);
-        var result = new ResultDTO<>();
+        var result = new CommonResultData<ResultDTO<?>>();
         var request = new HttpEntity<>(getHttpHeaders());
         try {
             var response = restTemplate.exchange(String.format("/1.0.0/transactions/%s", transactionId), HttpMethod.DELETE, request, ResultDTO.class);
             log.debug("Response to cancel transaction by id: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                result = response.getBody();
-                result.setSuccess(true);
+                result.setData(response.getBody());
+                var success = 0 == response.getBody().getCode();
+                result.setStatus(success ? HasResult.SUCCESS : HasResult.UNKNOWN_ERROR);
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
-                result.setSuccess(false);
-                result.setMsg("RESPONSE IS NOT SUCCESS");
+                result.setStatus(HasResult.UNKNOWN_ERROR);
+                result.setDetails("RESPONSE IS NOT SUCCESS");
             }
         } catch (Exception e) {
-            result.setException(e);
-            result.setMsg(e.getMessage());
-            result.setSuccess(false);
+            log.warn("Can not exchange data from abs: {}", e.getMessage());
+            result.setDetails(e.getMessage());
+            result.setStatus(HasResult.UNKNOWN_ERROR);
         }
         log.debug("Result to cancel transaction: {}", result);
         return result;
     }
 
     @Override
-    public ResultDTO<List<ExchangeRateDTO>> getExchangeRates(ExchangeRateCriteria criteria) {
+    public HasData<List<ExchangeRateDTO>> getExchangeRates(ExchangeRateCriteria criteria) {
         log.debug("Request to get exchange rates by criteria: {}", criteria);
-        var result = new ResultDTO<List<ExchangeRateDTO>>();
+        var result = new CommonResultData<List<ExchangeRateDTO>>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         var request = new HttpEntity<>(getHttpHeaders());
-        var uri = UriComponentsBuilder.fromUriString(fidoAbsProperties.getConfig().getBaseUri() + "/1.0.0/international-card/get-list-exchange-rates")
-            .queryParam("dateCross", criteria.getDateCross().format(formatter))
-            .queryParam("currencyCode", criteria.getCurrencyCode())
-            .build();
+        var uri = UriComponentsBuilder.fromUriString(fidoAbsProperties.getConfig().getBaseUri() + "/1.0.0/international-card/get-list-exchange-rates").queryParam("dateCross", criteria.getDateCross().format(formatter)).queryParam("currencyCode", criteria.getCurrencyCode()).build();
         try {
             var response = restTemplate.exchange(uri.toUri(), HttpMethod.GET, request, ExchangeRateDTO[].class);
             log.debug("Response to get exchange rates: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                result = new ResultDTO<>(List.of(response.getBody()));
-                result.setSuccess(true);
+                result.setData(List.of(response.getBody()));
+                result.setStatus(HasResult.SUCCESS);
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
-                result.setSuccess(false);
-                result.setMsg("RESPONSE IS NOT SUCCESS");
+                result.setStatus(HasResult.UNKNOWN_ERROR);
+                result.setDetails("RESPONSE IS NOT SUCCESS");
             }
         } catch (Exception e) {
-            result.setException(e);
-            result.setMsg(e.getMessage());
-            result.setSuccess(false);
+            log.warn("Can not exchange data from abs: {}", e.getMessage());
+            result.setDetails(e.getMessage());
+            result.setStatus(HasResult.UNKNOWN_ERROR);
         }
         log.debug("Result to exchange rates: {}", result);
         return result;
     }
 
     @Override
-    public ResultDTO<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO) {
+    public HasData<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO) {
         log.debug("Request to international conversion: {}", conversionDTO);
-        var result = new ResultDTO<ConversionResultDTO>();
+        var result = new CommonResultData<ConversionResultDTO>();
         var request = new HttpEntity<>(conversionDTO, getHttpHeaders());
         try {
             var response = restTemplate.exchange("/1.0.0/international-card/conversion", HttpMethod.POST, request, ConversionResultDTO.class);
             log.debug("Response to international conversion: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result.setData(response.getBody());
-                result.setSuccess(true);
+                result.setStatus(HasResult.SUCCESS);
             } else if (response.getStatusCode().is4xxClientError()) {
                 log.debug("Unauthorized client");
-                result.setSuccess(false);
-                result.setMsg("Unauthorized client");
+                result.setStatus(HasResult.UNKNOWN_ERROR);
+                result.setDetails("Unauthorized client");
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
-                result.setSuccess(false);
-                result.setMsg("RESPONSE IS NOT SUCCESS");
+                result.setStatus(HasResult.UNKNOWN_ERROR);
+                result.setDetails("RESPONSE IS NOT SUCCESS");
             }
         } catch (Exception e) {
-            result.setException(e);
-            result.setMsg(e.getMessage());
-            result.setSuccess(false);
+            log.warn("Can not exchange data from abs: {}", e.getMessage());
+            result.setDetails(e.getMessage());
+            result.setStatus(HasResult.UNKNOWN_ERROR);
         }
         log.debug("Result to international conversion: {}", result);
         return result;

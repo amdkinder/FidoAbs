@@ -1,7 +1,12 @@
 package uz.devops.fido.abs.service;
 
 import uz.devops.fido.abs.model.*;
+import uz.javlon.commons.result.HasData;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 public interface FidoAbsService {
@@ -11,10 +16,11 @@ public interface FidoAbsService {
     /**
      * Поиск клиента в системе ИАБС по clientId (Физ)
      *
-     * @param clientId (физ) клиент ид
+     * @param clientId (физ) клиент ид Размерность (12)
      * @return Информация клиента
      */
-    ResultDTO<ClientInfoDTO> getClientInfo(String clientId);
+    HasData<ClientInfoDTO> getClientInfo(@Valid @Size(max = 12) @NotBlank String clientId);
+
 
     /**
      * Список активных счетов клиента (Физ+Юр)
@@ -22,7 +28,7 @@ public interface FidoAbsService {
      * @param clientId
      * @return
      */
-    ResultDTO<List<AccountDTO>> getActiveAccounts(String clientId);
+    HasData<List<AccountDTO>> getActiveAccounts(@Valid @Size(max = 12) @NotBlank String clientId);
 
     /**
      * Формирование разовых платежей (Физ+Юр)
@@ -30,7 +36,7 @@ public interface FidoAbsService {
      * @param transactionDTO
      * @return
      */
-    ResultDTO<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO);
+    HasData<TransactionResultDTO.CreatedTransaction> createTransaction(@Valid @NotNull TransactionDTO transactionDTO);
 
     /**
      * Получить состояние проводки (Физ+Юр)
@@ -38,7 +44,7 @@ public interface FidoAbsService {
      * @param transactionId
      * @return
      */
-    ResultDTO<TransactionDTO> getTransaction(String transactionId);
+    HasData<TransactionDTO> getTransaction(@NotBlank @NotNull String transactionId);
 
     /**
      * Отмена транзакции (Физ+Юр)
@@ -46,7 +52,7 @@ public interface FidoAbsService {
      * @param transactionId
      * @return
      */
-    ResultDTO<?> deleteTransactionById(String transactionId);
+    HasData<?> deleteTransactionById(@Valid @NotNull String transactionId);
 
     /**
      * Список курс валют
@@ -54,7 +60,7 @@ public interface FidoAbsService {
      * @param criteria
      * @return
      */
-    ResultDTO<List<ExchangeRateDTO>> getExchangeRates(ExchangeRateCriteria criteria);
+    HasData<List<ExchangeRateDTO>> getExchangeRates(@Valid @NotNull ExchangeRateCriteria criteria);
 
     /**
      * Конвертация
@@ -62,6 +68,6 @@ public interface FidoAbsService {
      * @param conversionDTO
      * @return
      */
-    ResultDTO<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO);
+    HasData<ConversionResultDTO> internationalConversion(@Valid @NotNull ConversionDTO conversionDTO);
 
 }

@@ -14,8 +14,6 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class Transmitter {
 
-    private String pinfl;
-
     @Size(max = 5)
     private String codeFilial;
 

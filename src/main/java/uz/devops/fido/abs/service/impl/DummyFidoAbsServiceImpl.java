@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uz.devops.fido.abs.model.*;
 import uz.devops.fido.abs.service.FidoAbsService;
+import uz.javlon.commons.result.CommonResultData;
+import uz.javlon.commons.result.HasData;
 
 import java.util.List;
 
@@ -21,45 +23,41 @@ public class DummyFidoAbsServiceImpl implements FidoAbsService {
 
 
     @Override
-    public ResultDTO<ClientInfoDTO> getClientInfo(String clientId) {
+    public HasData<ClientInfoDTO> getClientInfo(String clientId) {
         var clientInfo = DummyData.clientInfo();
-        return new ResultDTO<>(clientInfo);
+        return new CommonResultData<>(clientInfo);
     }
 
     @Override
-    public ResultDTO<List<AccountDTO>> getActiveAccounts(String clientId) {
+    public HasData<List<AccountDTO>> getActiveAccounts(String clientId) {
         var accountDTO = DummyData.accountDTO();
-        return new ResultDTO<>(List.of(accountDTO));
+        return new CommonResultData<>(List.of(accountDTO));
     }
 
     @Override
-    public ResultDTO<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
-        return new ResultDTO<>(DummyData.createdDocument());
+    public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(TransactionDTO transactionDTO) {
+        return new CommonResultData<>(DummyData.createdDocument());
     }
 
     @Override
-    public ResultDTO<TransactionDTO> getTransaction(String transactionId) {
+    public HasData<TransactionDTO> getTransaction(String transactionId) {
         var documentDTO = DummyData.transactionDTO();
-        return new ResultDTO<>(documentDTO);
+        return new CommonResultData<>(documentDTO);
     }
 
     @Override
-    public ResultDTO<?> deleteTransactionById(String transactionId) {
-        return ResultDTO.builder()
-            .msg("Успешно")
-            .code(0)
-            .success(true)
-            .build();
+    public HasData<ResultDTO<?>> deleteTransactionById(String transactionId) {
+        return new CommonResultData<>(ResultDTO.builder().msg("Успешно").code(0).success(true).build());
     }
 
     @Override
-    public ResultDTO<List<ExchangeRateDTO>> getExchangeRates(ExchangeRateCriteria criteria) {
-        return new ResultDTO<>(List.of(DummyData.exchangeRateDTO()));
+    public HasData<List<ExchangeRateDTO>> getExchangeRates(ExchangeRateCriteria criteria) {
+        return new CommonResultData<>(List.of(DummyData.exchangeRateDTO()));
     }
 
     @Override
-    public ResultDTO<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO) {
-        return new ResultDTO<>(DummyData.conversionResultDTO());
+    public HasData<ConversionResultDTO> internationalConversion(ConversionDTO conversionDTO) {
+        return new CommonResultData<>(DummyData.conversionResultDTO());
     }
 
 

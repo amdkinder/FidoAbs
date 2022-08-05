@@ -23,9 +23,17 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
+        <devops-commons.version>2.3.11</devops-commons.version>
     </properties>
 
 	<dependencies>
+
+        <dependency>
+            <groupId>uz.devops.commons</groupId>
+            <artifactId>devops-commons</artifactId>
+            <version>${devops-commons.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -76,6 +84,31 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+        <plugins>
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>2.5.2</version>
+            <executions>
+                <execution>
+                    <id>install-javlon-ms-commons</id>
+                    <phase>clean</phase>
+                    <goals>
+                        <goal>install-file</goal>
+                    </goals>
+                    <configuration>
+                        <file>${basedir}/lib/devops-commons-${devops-commons.version}.jar</file>
+                        <repositoryLayout>default</repositoryLayout>
+                        <groupId>uz.devops.commons</groupId>
+                        <artifactId>devops-commons</artifactId>
+                        <version>${devops-commons.version}</version>
+                        <packaging>jar</packaging>
+                        <generatePom>true</generatePom>
+                    </configuration>
+                </execution>
+            </executions>
+            </plugin>
+        </plugins>
 	</build>
 
 

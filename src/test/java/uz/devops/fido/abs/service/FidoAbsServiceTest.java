@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -82,7 +79,7 @@ class FidoAbsServiceTest {
             );
 
         var result = fidoAbsService.getClientInfo(DummyData.clientId());
-        assertThat(result.getSuccess()).isTrue();
+        assertThat(result.isSuccess()).isTrue();
         assertThat(result.getData()).isEqualTo(DummyData.clientInfo());
 
     }
@@ -100,7 +97,7 @@ class FidoAbsServiceTest {
             );
 
         var result = fidoAbsService.getActiveAccounts(DummyData.clientId());
-        assertThat(result.getSuccess()).isTrue();
+        assertThat(result.isSuccess()).isTrue();
         assertThat(result.getData()).isNotNull();
         assertThat(result.getData().size()).isEqualTo(1);
         assertThat(result.getData().get(0)).isEqualTo(DummyData.accountDTO());
@@ -119,7 +116,7 @@ class FidoAbsServiceTest {
             );
 
         var result = fidoAbsService.createTransaction(DummyData.transactionDTO());
-        assertThat(result.getSuccess()).isTrue();
+        assertThat(result.isSuccess()).isTrue();
         assertThat(result.getData()).isNotNull();
         assertThat(result.getData()).isEqualTo(DummyData.createdDocument());
     }
@@ -136,7 +133,7 @@ class FidoAbsServiceTest {
                 .body(mapper.writeValueAsString(DummyData.transactionDTO()))
             );
         var result = fidoAbsService.getTransaction(DummyData.transactionId());
-        assertThat(result.getSuccess()).isTrue();
+        assertThat(result.isSuccess()).isTrue();
         assertThat(result.getData()).isNotNull();
         assertThat(result.getData()).isEqualTo(DummyData.transactionDTO());
     }
@@ -153,7 +150,7 @@ class FidoAbsServiceTest {
                 .body(mapper.writeValueAsString(new ResultDTO<>(false, "Transaction Data not found")))
             );
         var result = fidoAbsService.deleteTransactionById(DummyData.transactionId());
-        assertThat(result.getSuccess()).isFalse();
+        assertThat(result.isSuccess()).isFalse();
         assertThat(result.getData()).isNull();
     }
 
@@ -174,7 +171,7 @@ class FidoAbsServiceTest {
                 .body(mapper.writeValueAsString(List.of(DummyData.exchangeRateDTO())))
             );
         var result = fidoAbsService.getExchangeRates(criteria);
-        assertThat(result.getSuccess()).isTrue();
+        assertThat(result.isSuccess()).isTrue();
         assertThat(result.getData()).isNotNull();
         assertThat(result.getData().get(0)).isEqualTo(DummyData.exchangeRateDTO());
     }
@@ -191,7 +188,7 @@ class FidoAbsServiceTest {
                 .body(mapper.writeValueAsString(DummyData.conversionResultDTO()))
             );
         var result = fidoAbsService.internationalConversion(DummyData.conversionDTO());
-        assertThat(result.getSuccess()).isTrue();
+        assertThat(result.isSuccess()).isTrue();
         assertThat(result.getData()).isNotNull();
         assertThat(result.getData()).isEqualTo(DummyData.conversionResultDTO());
     }

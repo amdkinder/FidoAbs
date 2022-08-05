@@ -6,6 +6,4 @@ public interface BaseResultDTO {
     String getMsg();
 
     int getCode();
-
-    Exception getException();
 }
