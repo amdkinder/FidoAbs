@@ -4,12 +4,40 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
+@Getter
 public enum AbsTranState {
-    SCHEDULED, UNKNOWN;
+    SCHEDULED(0, "Запланирован"),
+    SMP(1, "Принят СМП"),
+    INTRODUCED(11, "Введен"),
+    ADJUSTED(12, "Скорректирован"),
+    REMOVED(13, "Удален"),
+    CANCELED(14, "Аннулирован"),
+    ON_REMOVE(15, "На удаление"),
+    ON_REVISION(16, "На доработку"),
+    KILLED(18, "Забракован"),
+    FAULT(19, " Ошибки"),
+    POSTPONED(21, "Отложен"),
+    APPROVED(31, "Утвержден"),
+    APPROVED_GLB(32, "Утвержден Глб"),
+    HELD(41, "Проведен"),
+    ANOR(42, "Anor"),
+    SEND_KS(50, "Отправлен в КЦ"),
+    ACCEPTED_KS(51, "Принят КЦ"),
+    SENT_VERIFICATION(53, "Отправлен на верификацию"),
+    ACCEPTED_VERIFICATION(54, "Принят к верификации"),
+    AUTO_PAYMENT(55, "Автооплата"),
+    CHANGED_SPECIAL_ACCOUNT(60, "Заменен на спецсчет"),
+    IMPORT_FILE(62, "Импортирован из файла"),
+    UNKNOWN(-1, "Unknown");
 
-    @Getter
-    private int code;
+    private final int code;
 
+    private final String caption;
+
+    AbsTranState(int code, String caption) {
+        this.code = code;
+        this.caption = caption;
+    }
 
     public static AbsTranState getStateFromCode(String codeStr) {
         if (codeStr == null) {
@@ -19,30 +47,6 @@ public enum AbsTranState {
     }
 
     public static AbsTranState getStateFromCode(int code) {
-        return  Arrays.stream(values()).filter(it -> it.code == code).findFirst().orElse(UNKNOWN);
+        return Arrays.stream(values()).filter(it -> it.code == code).findFirst().orElse(UNKNOWN);
     }
 }
-/*
-0 Запланирован - Scheduled
-1 Принят СМП - SMP
-11 Введен - Introduced
-12 Скорректирован - Adjusted
-13 Удален - Removed
-14 Аннулирован - Canceled
-15 На удаление - For removal
-16 На доработку - For revision
-18 Забракован - Killed
-19 Ошибки - Fault
-21 Отложен
-31 Утвержден
-32 Утвержден Глб
-41 Проведен
-42 ANOR
-50 Отправлен в КЦ
-51 Принят КЦ
-53 Отправлен на верификацию
-54 Принят к верификации
-55 Автооплата
-60 Заменен на спецсчет
-62 Импортирован из файла
- */
