@@ -112,7 +112,8 @@ class FidoAbsServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(mapper.writeValueAsString(new TransactionResultDTO(List.of(DummyData.createdDocument()))))
+                .body(mapper.writeValueAsString(
+                    ResultDTO.builder().code(0).responseBody(new TransactionResultDTO(List.of(DummyData.createdDocument()))).build()))
             );
 
         var result = fidoAbsService.createTransaction(DummyData.transactionDTO());
@@ -130,7 +131,12 @@ class FidoAbsServiceTest {
             .andExpect(method(HttpMethod.GET))
             .andRespond(withStatus(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(mapper.writeValueAsString(DummyData.transactionDTO()))
+                .body(mapper.writeValueAsString(
+                    ResultDTO.builder()
+                        .code(0)
+                        .responseBody(DummyData.transactionDTO())
+                        .build()
+                ))
             );
         var result = fidoAbsService.getTransaction(DummyData.transactionId());
         assertThat(result.isSuccess()).isTrue();
@@ -185,7 +191,12 @@ class FidoAbsServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(mapper.writeValueAsString(DummyData.conversionResultDTO()))
+                .body(mapper.writeValueAsString(
+                    ResultDTO.builder()
+                        .code(0)
+                        .responseBody(DummyData.conversionResultDTO())
+                        .build()
+                ))
             );
         var result = fidoAbsService.internationalConversion(DummyData.conversionDTO());
         assertThat(result.isSuccess()).isTrue();

@@ -1,10 +1,15 @@
 package uz.devops.fido.abs.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.devops.fido.abs.util.LocalDateJsonDeserializer;
+import uz.devops.fido.abs.util.LocalDateJsonSerializer;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -15,7 +20,7 @@ public class ConversionDTO {
 
     private String indicator;
 
-    private String amount;
+    private BigDecimal amount;
 
     private String clientId;
 
@@ -31,6 +36,8 @@ public class ConversionDTO {
 
     private String isMasked;
 
+    @JsonDeserialize(using = LocalDateJsonDeserializer.class)
+    @JsonSerialize(using = LocalDateJsonSerializer.class)
     private LocalDate convertionDateTime;
 
     private String rollbackIs;

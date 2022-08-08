@@ -1,0 +1,20 @@
+[
+    {
+        "amount": 2000,
+        "currency": "840",
+        "clientId": "6557883",
+        "account": "17403000900000491801",
+        "codeFilial": "00491",
+        "purpose": "test",
+        "indicator": "CR",
+        "paymentType": "22",
+        "convertionDateTime": "20.05.2022",
+        "cardNumber": "5179860049916928",
+        "dateExp": "CR",
+        "externalCardNumber": "8600302914327280",
+        "con": "4",
+        "buy": "1090000",
+        "isMasked": "Y",
+        "rollbackIs": "0"
+    }
+]

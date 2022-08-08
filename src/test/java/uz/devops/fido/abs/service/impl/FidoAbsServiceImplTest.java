@@ -81,5 +81,10 @@ public class FidoAbsServiceImplTest {
 
     @Test
     void internationalConversion() {
+        var result = fidoAbsService.internationalConversion(DummyData.conversionDTO());
+        assertThat(result).isNotNull();
+        assertThat(result.isSuccess()).isTrue();
+        log.info("result: {}", result);
+        assertThat(result.getData()).isNotNull();
     }
 }

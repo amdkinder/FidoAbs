@@ -52,6 +52,7 @@ public class FidoAbsServiceImpl implements FidoAbsService {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             httpHeaders.setBearerAuth(authorizationService.getToken());
             httpHeaders.set("Accept-Language", "ru");
+            httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON));
         }
         httpHeaders.set("requestId", String.valueOf(System.currentTimeMillis()));
         return httpHeaders;
@@ -119,7 +120,8 @@ public class FidoAbsServiceImpl implements FidoAbsService {
         var result = new CommonResultData<TransactionResultDTO.CreatedTransaction>();
         var request = new HttpEntity<>(new TransactionReqDTO(transactionDTO), getHttpHeaders());
         try {
-            var response = restTemplate.exchange("/1.0.0/transactions", HttpMethod.POST, request, new ParameterizedTypeReference<ResultDTO<TransactionResultDTO>>() {});
+            var response = restTemplate.exchange("/1.0.0/transactions", HttpMethod.POST, request, new ParameterizedTypeReference<ResultDTO<TransactionResultDTO>>() {
+            });
             log.debug("Response to create document: {}", response);
             if (response.getStatusCode().is2xxSuccessful()
                 && response.getBody() != null
@@ -152,7 +154,12 @@ public class FidoAbsServiceImpl implements FidoAbsService {
         var request = new HttpEntity<>(getHttpHeaders());
 
         try {
-            var response = restTemplate.exchange(String.format("/1.0.0/transactions/%s", transactionId), HttpMethod.GET, request, new ParameterizedTypeReference<ResultDTO<AbsTranDTO>>() {});
+            var response = restTemplate.exchange(
+                String.format("/1.0.0/transactions/%s", transactionId),
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<ResultDTO<AbsTranDTO>>() {
+                });
             log.debug("Response to get document: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 result.setData(response.getBody().getResponseBody());
@@ -230,15 +237,17 @@ public class FidoAbsServiceImpl implements FidoAbsService {
         var result = new CommonResultData<ConversionResultDTO>();
         var request = new HttpEntity<>(conversionDTO, getHttpHeaders());
         try {
-            var response = restTemplate.exchange("/1.0.0/international-card/conversion", HttpMethod.POST, request, ConversionResultDTO.class);
+            var response = restTemplate.exchange(
+                "/1.0.0/international-card/conversion",
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<ResultDTO<ConversionResultDTO>>() {
+                });
+
             log.debug("Response to international conversion: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                result.setData(response.getBody());
-                result.setStatus(HasResult.SUCCESS);
-            } else if (response.getStatusCode().is4xxClientError()) {
-                log.debug("Unauthorized client");
-                result.setStatus(HasResult.UNKNOWN_ERROR);
-                result.setDetails("Unauthorized client");
+                result.setData(response.getBody().getResponseBody());
+                result.setStatus(response.getBody().toStatus());
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
                 result.setStatus(HasResult.UNKNOWN_ERROR);

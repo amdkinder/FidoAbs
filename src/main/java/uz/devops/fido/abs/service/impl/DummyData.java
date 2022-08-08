@@ -85,15 +85,15 @@ public class DummyData {
     public static ConversionDTO conversionDTO() {
         return ConversionDTO.builder()
             .indicator("CR")
-            .amount("200")
+            .amount(BigDecimal.valueOf(2000))
             .clientId("6557883")
             .con("4")
-            .purpose("test 200 popolnenie")
-            .buy("110000")
+            .purpose("test")
+            .buy("1090000")
             .externalCardNumber("8600302914327280")
-            .dateExp("0225")
+            .dateExp("CR")
             .isMasked("Y")
-            .convertionDateTime(LocalDate.EPOCH)
+            .convertionDateTime(LocalDate.of(2022, 5, 20))
             .rollbackIs("0")
             .paymentType("22")
             .codeFilial("00491")
@@ -102,8 +102,25 @@ public class DummyData {
             .cardNumber("5179860049916928")
             .build();
     }
+    /*
+    "currency": "840",
+  "clientId": "6557883",
+  "account": "17403000900000491801",
+  "codeFilial": "00491",
+  "purpose": "test",
+  "indicator": "CR",
+  "paymentType": "22",
+  "convertionDateTime": "20.05.2022",
+  "cardNumber": "5179860049916928",
+  "dateExp": "CR",
+  "externalCardNumber": "8600302914327280",
+  "con": "4",
+  "buy": "1090000",
+  "isMasked": "Y",
+  "rollbackIs": "0"
+     */
 
-    public static  ExchangeRateCriteria criteria() {
+    public static ExchangeRateCriteria criteria() {
         return new ExchangeRateCriteria(LocalDate.EPOCH, "ALL");
     }
 

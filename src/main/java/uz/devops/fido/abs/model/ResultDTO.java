@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.javlon.commons.result.HasResult;
 
 @Data
 @Builder
@@ -28,6 +29,10 @@ public class ResultDTO<T> implements BaseResultDTO {
 
     public boolean isSuccess() {
         return this.code == 0;
+    }
+
+    public HasResult toStatus() {
+        return isSuccess() ? HasResult.SUCCESS : HasResult.UNKNOWN_ERROR;
     }
 
 }
