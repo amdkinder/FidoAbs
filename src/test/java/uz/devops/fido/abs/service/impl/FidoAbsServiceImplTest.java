@@ -77,6 +77,10 @@ public class FidoAbsServiceImplTest {
 
     @Test
     void getExchangeRates() {
+        var result = fidoAbsService.getExchangeRates(DummyData.criteria());
+        log.info("Response from fido abs: {}", result);
+        assertThat(result).isNotNull();
+        assertThat(result.isSuccess()).isTrue();
     }
 
     @Test

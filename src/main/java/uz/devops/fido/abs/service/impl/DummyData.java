@@ -1,6 +1,9 @@
 package uz.devops.fido.abs.service.impl;
 
 import uz.devops.fido.abs.model.*;
+import uz.devops.fido.abs.model.enumuration.ConversionIndicator;
+import uz.devops.fido.abs.model.enumuration.Currency;
+import uz.devops.fido.abs.model.enumuration.PaymentType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,28 +47,27 @@ public class DummyData {
             .id("4345889")
             .build();
     }
-
     public static AbsTranDTO transactionDTO() {
         return AbsTranDTO.builder()
-            .type("106")
-            .externalId("string_extId")
+            .amount(BigDecimal.valueOf(10000))
+            .docNum("99999951")
             .sender(Transmitter.builder()
-                .account("17403000300000491643")
+                .account("22616000990000582001")
+                .name("JAVLON ERALIYEV")
                 .codeFilial("00491")
                 .tax("")
-                .name("Tranzit 22616")
                 .build())
             .recipient(Transmitter.builder()
-                .account("22616000660702149001")
+                .account("22616000990000582002")
+                .name("ERALIYEV JAVLON")
                 .codeFilial("00491")
                 .tax("")
-                .name("Kasimov F")
                 .build())
             .purpose(Purpose.builder()
-                .code("00634")
-                .name("пополнение тест")
+                .name("TEST Перевод сo счета ${senderName} на ${recipientName}")
+                .code("00668")
                 .build())
-            .amount(new BigDecimal(1000))
+            .type("106")
             .build();
     }
 
@@ -84,7 +86,7 @@ public class DummyData {
 
     public static ConversionDTO conversionDTO() {
         return ConversionDTO.builder()
-            .indicator("CR")
+            .indicator(ConversionIndicator.CONVERSE)
             .amount(BigDecimal.valueOf(2000))
             .clientId("6557883")
             .con("4")
@@ -95,7 +97,7 @@ public class DummyData {
             .isMasked("Y")
             .convertionDateTime(LocalDate.of(2022, 5, 20))
             .rollbackIs("0")
-            .paymentType("22")
+            .paymentType(PaymentType.UZCARD)
             .codeFilial("00491")
             .currency("840")
             .account("17403000900000491801")
@@ -121,7 +123,7 @@ public class DummyData {
      */
 
     public static ExchangeRateCriteria criteria() {
-        return new ExchangeRateCriteria(LocalDate.EPOCH, "ALL");
+        return new ExchangeRateCriteria(LocalDate.now(), Currency.ALL);
     }
 
     public static ConversionResultDTO conversionResultDTO() {

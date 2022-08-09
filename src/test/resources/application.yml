@@ -2,6 +2,9 @@ fido-abs:
     #  name: fido-abs-sample
     simulate: false
     test-realdata: false
+    data:
+        code-filial: 00491
+        con: 4
     config:
         read-timeout: 5000
         connect-timeout: 5000
@@ -9,6 +12,13 @@ fido-abs:
         token: dxN1cm5hbWU6GFzc3dvcmQ=
         username: adm10491
         password: rfv123rfv
+    acc-card-pattern:
+        HUMO: 17403000600000491316
+        UZCARD: 17403000900000491801
+    reverse-acc-card-pattern:
+        HUMO: 23118000900000491316
+        UZCARD: 23118000500000491801
+
 logging:
     level:
         root: debug

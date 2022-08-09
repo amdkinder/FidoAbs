@@ -120,8 +120,12 @@ public class FidoAbsServiceImpl implements FidoAbsService {
         var result = new CommonResultData<TransactionResultDTO.CreatedTransaction>();
         var request = new HttpEntity<>(new TransactionReqDTO(transactionDTO), getHttpHeaders());
         try {
-            var response = restTemplate.exchange("/1.0.0/transactions", HttpMethod.POST, request, new ParameterizedTypeReference<ResultDTO<TransactionResultDTO>>() {
-            });
+            var response = restTemplate.exchange(
+                "/1.0.0/transactions",
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<ResultDTO<TransactionResultDTO>>() {
+                });
             log.debug("Response to create document: {}", response);
             if (response.getStatusCode().is2xxSuccessful()
                 && response.getBody() != null
@@ -212,10 +216,15 @@ public class FidoAbsServiceImpl implements FidoAbsService {
         var request = new HttpEntity<>(getHttpHeaders());
         var uri = UriComponentsBuilder.fromUriString(fidoAbsProperties.getConfig().getBaseUri() + "/1.0.0/international-card/get-list-exchange-rates").queryParam("dateCross", criteria.getDateCross().format(formatter)).queryParam("currencyCode", criteria.getCurrencyCode()).build();
         try {
-            var response = restTemplate.exchange(uri.toUri(), HttpMethod.GET, request, ExchangeRateDTO[].class);
+            var response = restTemplate.exchange(
+                uri.toUri(),
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<ResultDTO<ExchangeResultDTO<List<ExchangeRateDTO>>>>() {
+                });
             log.debug("Response to get exchange rates: {}", response);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                result.setData(List.of(response.getBody()));
+                result.setData(response.getBody().getResponseBody().getData());
                 result.setStatus(HasResult.SUCCESS);
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");

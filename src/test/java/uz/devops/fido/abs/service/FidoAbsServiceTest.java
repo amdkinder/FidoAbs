@@ -19,10 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import uz.devops.fido.abs.config.FidoAbsConfiguration;
 import uz.devops.fido.abs.config.FidoAbsProperties;
 import uz.devops.fido.abs.config.TestConfig;
-import uz.devops.fido.abs.model.AccountResDTO;
-import uz.devops.fido.abs.model.ClientInfoResDTO;
-import uz.devops.fido.abs.model.ResultDTO;
-import uz.devops.fido.abs.model.TransactionResultDTO;
+import uz.devops.fido.abs.model.*;
 import uz.devops.fido.abs.service.impl.AuthorizationService;
 import uz.devops.fido.abs.service.impl.DummyData;
 
@@ -163,7 +160,7 @@ class FidoAbsServiceTest {
     @Test
     @SneakyThrows
     void getExchangeRates() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        var formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         var criteria = DummyData.criteria();
         initialMock();
         mockServer.expect(ExpectedCount.manyTimes(),
@@ -174,7 +171,9 @@ class FidoAbsServiceTest {
             .andExpect(method(HttpMethod.GET))
             .andRespond(withStatus(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(mapper.writeValueAsString(List.of(DummyData.exchangeRateDTO())))
+                .body(mapper.writeValueAsString(
+                    new ResultDTO<>(new ExchangeResultDTO<>(List.of(DummyData.exchangeRateDTO())))
+                ))
             );
         var result = fidoAbsService.getExchangeRates(criteria);
         assertThat(result.isSuccess()).isTrue();

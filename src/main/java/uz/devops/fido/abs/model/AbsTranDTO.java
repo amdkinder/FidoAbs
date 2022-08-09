@@ -1,6 +1,8 @@
 package uz.devops.fido.abs.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
@@ -36,6 +38,7 @@ public class AbsTranDTO {
     private Transmitter sender;
 
     @JsonDeserialize(using = TranStateDeserializer.class)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private AbsTranState state;
 
     @NotNull

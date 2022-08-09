@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.devops.fido.abs.model.enumuration.ConversionIndicator;
+import uz.devops.fido.abs.model.enumuration.PaymentType;
 import uz.devops.fido.abs.util.LocalDateJsonDeserializer;
 import uz.devops.fido.abs.util.LocalDateJsonSerializer;
 
@@ -18,7 +20,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ConversionDTO {
 
-    private String indicator;
+    @JsonSerialize(using = ConversionIndicator.ConIndicatorSerializer.class)
+    @JsonDeserialize(using = ConversionIndicator.ConIndicatorDeserializer.class)
+    private ConversionIndicator indicator;
 
     private BigDecimal amount;
 
@@ -42,7 +46,9 @@ public class ConversionDTO {
 
     private String rollbackIs;
 
-    private String paymentType;
+    @JsonSerialize(using = PaymentType.PaymentTypeSerializer.class)
+    @JsonDeserialize(using = PaymentType.PaymentTypeDeSerializer.class)
+    private PaymentType paymentType;
 
     private String codeFilial;
 

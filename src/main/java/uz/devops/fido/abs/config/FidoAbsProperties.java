@@ -5,15 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Map;
+
 @Setter
 @Getter
 @ConfigurationProperties(prefix = "fido-abs")
 public class FidoAbsProperties {
     private Config config;
     private Boolean simulate;
+    private Map<String, String> accCardPattern;
+    private Map<String, String> reverseAccCardPattern;
 
     @Data
-
     public static class Config {
         private String username;
         private String password;
@@ -22,4 +25,11 @@ public class FidoAbsProperties {
         private int connectTimeout = 5;
         private String baseUri;
     }
+
+    @Data
+    public static class AbsConstants {
+        private String codeFilial;
+        private String con;
+    }
+
 }
