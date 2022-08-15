@@ -40,10 +40,10 @@ public interface FidoAbsService {
 
     /**
      *
-     * @param transactionDTO
+     * @param tranList
      * @return
      */
-    HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(@Valid @NotNull AbsTranDTO ...transactionDTO);
+    HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(@Valid @NotNull List<AbsTranDTO> tranList);
 
     /**
      * Получить состояние проводки (Физ+Юр)

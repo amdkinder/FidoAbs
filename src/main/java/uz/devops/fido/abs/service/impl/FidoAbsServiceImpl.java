@@ -130,12 +130,12 @@ public class FidoAbsServiceImpl implements FidoAbsService {
     }
 
     public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(AbsTranDTO transactionDTO) {
-        var result = createTransactions(transactionDTO);
+        var result = createTransactions(List.of(transactionDTO));
         return new CommonResultData<>(HasResult.SUCCESS, result.getData().get(0));
     }
 
     @Override
-    public HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(AbsTranDTO... tranList) {
+    public HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(List<AbsTranDTO> tranList) {
         log.debug("Request to create document: {}", tranList);
         var result = new CommonResultData<List<TransactionResultDTO.CreatedTransaction>>();
         var request = new HttpEntity<>(new TransactionReqDTO(tranList), getHttpHeaders());

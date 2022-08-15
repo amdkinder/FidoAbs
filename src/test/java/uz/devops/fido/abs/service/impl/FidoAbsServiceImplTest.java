@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import uz.devops.fido.abs.config.TestConfig;
 import uz.devops.fido.abs.service.FidoAbsService;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 //@RunWith(SpringRunner.class)
@@ -56,7 +58,7 @@ public class FidoAbsServiceImplTest {
 
     @Test
     void createTransaction() {
-        var result = fidoAbsService.createTransactions(DummyData.transactionDTO());
+        var result = fidoAbsService.createTransactions(List.of(DummyData.transactionDTO()));
         log.info("Response from fido abs: {}", result);
         assertThat(result).isNotNull();
     }

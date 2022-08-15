@@ -36,7 +36,7 @@ public class DummyFidoAbsServiceImpl implements FidoAbsService {
     }
 
     @Override
-    public HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(AbsTranDTO ...transactionDTO) {
+    public HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(List<AbsTranDTO> transactionDTO) {
         return new CommonResultData<>(List.of(DummyData.createdDocument()));
     }
 
