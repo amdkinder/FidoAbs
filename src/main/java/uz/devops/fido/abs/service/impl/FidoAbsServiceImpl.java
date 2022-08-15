@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uz.devops.fido.abs.config.FidoAbsConfiguration;
@@ -20,6 +22,7 @@ import uz.javlon.commons.result.CommonResultData;
 import uz.javlon.commons.result.HasData;
 import uz.javlon.commons.result.HasResult;
 
+import java.net.SocketTimeoutException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -79,10 +82,16 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                 result.setStatus(HasResult.UNKNOWN_ERROR);
                 result.setDetails("RESPONSE IS NOT SUCCESS");
             }
+        } catch (ResourceAccessException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                log.error("Timeout error occurred : {}", e.getLocalizedMessage());
+                return new CommonResultData<>(HasResult.TIMEOUT, null, e.getLocalizedMessage());
+            }
+            log.error("Resource access error occurred : {}", e.getLocalizedMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         } catch (Exception e) {
-            log.warn("Can not exchange data from abs: {}", e.getMessage());
-            result.setDetails(e.getMessage());
-            result.setStatus(HasResult.UNKNOWN_ERROR);
+            log.error("Can not exchange data from abs: {}", e.getMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         }
         log.debug("RESULT to get client info by client id: {}, result: {}", clientId, result);
         return result;
@@ -105,20 +114,31 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                 result.setStatus(HasResult.UNKNOWN_ERROR);
                 result.setDetails("RESPONSE IS NOT SUCCESS");
             }
+        } catch (ResourceAccessException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                log.error("Timeout error occurred : {}", e.getLocalizedMessage());
+                return new CommonResultData<>(HasResult.TIMEOUT, null, e.getLocalizedMessage());
+            }
+            log.error("Resource access error occurred : {}", e.getLocalizedMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         } catch (Exception e) {
-            log.warn("Can not exchange data from abs: {}", e.getMessage());
-            result.setDetails(e.getMessage());
-            result.setStatus(HasResult.UNKNOWN_ERROR);
+            log.error("Can not exchange data from abs: {}", e.getMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         }
         log.debug("RESULT to get client info by client id: {}, result: {}", clientId, result);
         return result;
     }
 
-    @Override
     public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(AbsTranDTO transactionDTO) {
-        log.debug("Request to create document: {}", transactionDTO);
-        var result = new CommonResultData<TransactionResultDTO.CreatedTransaction>();
-        var request = new HttpEntity<>(new TransactionReqDTO(transactionDTO), getHttpHeaders());
+        var result = createTransactions(transactionDTO);
+        return new CommonResultData<>(HasResult.SUCCESS, result.getData().get(0));
+    }
+
+    @Override
+    public HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(AbsTranDTO... tranList) {
+        log.debug("Request to create document: {}", tranList);
+        var result = new CommonResultData<List<TransactionResultDTO.CreatedTransaction>>();
+        var request = new HttpEntity<>(new TransactionReqDTO(tranList), getHttpHeaders());
         try {
             var response = restTemplate.exchange(
                 "/1.0.0/transactions",
@@ -131,21 +151,24 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                 && response.getBody() != null
                 && response.getBody().getResponseBody() != null
                 && response.getBody().getResponseBody().getCreatedDocuments() != null) {
-                TransactionResultDTO.CreatedTransaction createdDoc = null;
-                if (response.getBody().getResponseBody().getCreatedDocuments().size() > 0) {
-                    createdDoc = response.getBody().getResponseBody().getCreatedDocuments().get(0);
-                }
-                result.setData(createdDoc);
+                var tranResults = response.getBody().getResponseBody().getCreatedDocuments();
+                result.setData(tranResults);
                 result.setStatus(HasResult.SUCCESS);
             } else {
                 log.debug("RESPONSE IS NOT SUCCESS");
                 result.setStatus(HasResult.UNKNOWN_ERROR);
                 result.setDetails("RESPONSE IS NOT SUCCESS");
             }
+        } catch (ResourceAccessException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                log.error("Timeout error occurred : {}", e.getLocalizedMessage());
+                return new CommonResultData<>(HasResult.TIMEOUT, null, e.getLocalizedMessage());
+            }
+            log.error("Resource access error occurred : {}", e.getLocalizedMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         } catch (Exception e) {
-            log.warn("Can not exchange data from abs: {}", e.getMessage());
-            result.setDetails(e.getMessage());
-            result.setStatus(HasResult.UNKNOWN_ERROR);
+            log.error("Can not exchange data from abs: {}", e.getMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         }
         log.debug("Result to create document: {}", result);
         return result;
@@ -173,10 +196,16 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                 result.setStatus(HasResult.UNKNOWN_ERROR);
                 result.setDetails("RESPONSE IS NOT SUCCESS");
             }
+        } catch (ResourceAccessException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                log.error("Timeout error occurred : {}", e.getLocalizedMessage());
+                return new CommonResultData<>(HasResult.TIMEOUT, null, e.getLocalizedMessage());
+            }
+            log.error("Resource access error occurred : {}", e.getLocalizedMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         } catch (Exception e) {
-            log.warn("Can not exchange data from abs: {}", e.getMessage());
-            result.setDetails(e.getMessage());
-            result.setStatus(HasResult.UNKNOWN_ERROR);
+            log.error("Can not exchange data from abs: {}", e.getMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         }
         log.debug("Result to get document: {}", result);
         return result;
@@ -199,10 +228,16 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                 result.setStatus(HasResult.UNKNOWN_ERROR);
                 result.setDetails("RESPONSE IS NOT SUCCESS");
             }
+        } catch (ResourceAccessException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                log.error("Timeout error occurred : {}", e.getLocalizedMessage());
+                return new CommonResultData<>(HasResult.TIMEOUT, null, e.getLocalizedMessage());
+            }
+            log.error("Resource access error occurred : {}", e.getLocalizedMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         } catch (Exception e) {
-            log.warn("Can not exchange data from abs: {}", e.getMessage());
-            result.setDetails(e.getMessage());
-            result.setStatus(HasResult.UNKNOWN_ERROR);
+            log.error("Can not exchange data from abs: {}", e.getMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         }
         log.debug("Result to cancel transaction: {}", result);
         return result;
@@ -231,10 +266,16 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                 result.setStatus(HasResult.UNKNOWN_ERROR);
                 result.setDetails("RESPONSE IS NOT SUCCESS");
             }
+        } catch (ResourceAccessException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                log.error("Timeout error occurred : {}", e.getLocalizedMessage());
+                return new CommonResultData<>(HasResult.TIMEOUT, null, e.getLocalizedMessage());
+            }
+            log.error("Resource access error occurred : {}", e.getLocalizedMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         } catch (Exception e) {
-            log.warn("Can not exchange data from abs: {}", e.getMessage());
-            result.setDetails(e.getMessage());
-            result.setStatus(HasResult.UNKNOWN_ERROR);
+            log.error("Can not exchange data from abs: {}", e.getMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         }
         log.debug("Result to exchange rates: {}", result);
         return result;
@@ -262,10 +303,16 @@ public class FidoAbsServiceImpl implements FidoAbsService {
                 result.setStatus(HasResult.UNKNOWN_ERROR);
                 result.setDetails("RESPONSE IS NOT SUCCESS");
             }
+        } catch (ResourceAccessException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                log.error("Timeout error occurred : {}", e.getLocalizedMessage());
+                return new CommonResultData<>(HasResult.TIMEOUT, null, e.getLocalizedMessage());
+            }
+            log.error("Resource access error occurred : {}", e.getLocalizedMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         } catch (Exception e) {
-            log.warn("Can not exchange data from abs: {}", e.getMessage());
-            result.setDetails(e.getMessage());
-            result.setStatus(HasResult.UNKNOWN_ERROR);
+            log.error("Can not exchange data from abs: {}", e.getMessage());
+            return new CommonResultData<>(HasResult.UNKNOWN_ERROR, null, NestedExceptionUtils.getMostSpecificCause(e).getLocalizedMessage());
         }
         log.debug("Result to international conversion: {}", result);
         return result;

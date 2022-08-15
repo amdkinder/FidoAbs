@@ -5,7 +5,7 @@
 
 	<groupId>uz.devops.fido.abs</groupId>
 	<artifactId>spring-boot-fido-abs</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>jar</packaging>
 
 	<name>Spring Boot FidoAbs Plugin</name>

@@ -36,7 +36,14 @@ public interface FidoAbsService {
      * @param transactionDTO
      * @return
      */
-    HasData<TransactionResultDTO.CreatedTransaction> createTransaction(@Valid @NotNull AbsTranDTO transactionDTO);
+//    HasData<TransactionResultDTO.CreatedTransaction> createTransaction(@Valid @NotNull AbsTranDTO transactionDTO);
+
+    /**
+     *
+     * @param transactionDTO
+     * @return
+     */
+    HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(@Valid @NotNull AbsTranDTO ...transactionDTO);
 
     /**
      * Получить состояние проводки (Физ+Юр)

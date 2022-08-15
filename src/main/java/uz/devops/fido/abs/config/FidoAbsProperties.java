@@ -15,6 +15,7 @@ public class FidoAbsProperties {
     private Boolean simulate;
     private Map<String, String> accCardPattern;
     private Map<String, String> reverseAccCardPattern;
+    private AbsConstants constants;
 
     @Data
     public static class Config {

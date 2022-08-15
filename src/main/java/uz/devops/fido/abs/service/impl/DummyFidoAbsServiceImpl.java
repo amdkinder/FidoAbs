@@ -8,6 +8,7 @@ import uz.devops.fido.abs.service.FidoAbsService;
 import uz.javlon.commons.result.CommonResultData;
 import uz.javlon.commons.result.HasData;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static uz.devops.fido.abs.service.FidoAbsService.NAME;
@@ -35,8 +36,8 @@ public class DummyFidoAbsServiceImpl implements FidoAbsService {
     }
 
     @Override
-    public HasData<TransactionResultDTO.CreatedTransaction> createTransaction(AbsTranDTO transactionDTO) {
-        return new CommonResultData<>(DummyData.createdDocument());
+    public HasData<List<TransactionResultDTO.CreatedTransaction>> createTransactions(AbsTranDTO ...transactionDTO) {
+        return new CommonResultData<>(List.of(DummyData.createdDocument()));
     }
 
     @Override

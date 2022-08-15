@@ -56,7 +56,7 @@ public class FidoAbsServiceImplTest {
 
     @Test
     void createTransaction() {
-        var result = fidoAbsService.createTransaction(DummyData.transactionDTO());
+        var result = fidoAbsService.createTransactions(DummyData.transactionDTO());
         log.info("Response from fido abs: {}", result);
         assertThat(result).isNotNull();
     }

@@ -113,10 +113,10 @@ class FidoAbsServiceTest {
                     ResultDTO.builder().code(0).responseBody(new TransactionResultDTO(List.of(DummyData.createdDocument()))).build()))
             );
 
-        var result = fidoAbsService.createTransaction(DummyData.transactionDTO());
+        var result = fidoAbsService.createTransactions(DummyData.transactionDTO());
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getData()).isNotNull();
-        assertThat(result.getData()).isEqualTo(DummyData.createdDocument());
+        assertThat(result.getData().get(0)).isEqualTo(DummyData.createdDocument());
     }
 
     @Test
